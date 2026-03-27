@@ -259,12 +259,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentActiveInput = null;
     let selectedStationName = null;
 
+    // Get modal instance for manual triggering
+    const locationModalEl = document.getElementById('locationModal');
+    let locationModalInstance = null;
+    if (locationModalEl) {
+        locationModalInstance = bootstrap.Modal.getOrCreateInstance(locationModalEl);
+    }
+
     targetInputs.forEach(input => {
         input.setAttribute('readonly', 'readonly');
         input.style.cursor = 'pointer';
-        input.dataset.bsToggle = 'modal';
-        input.dataset.bsTarget = '#locationModal';
-        input.addEventListener('click', () => { currentActiveInput = input; resetSelection(); });
+        // Don't use data-bs-toggle — open modal manually to avoid race condition
+        input.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentActiveInput = input;
+            resetSelection();
+            if (locationModalInstance) locationModalInstance.show();
+        });
     });
 
     function resetSelection() {
@@ -482,10 +493,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirmBtn) {
         confirmBtn.addEventListener('click', () => {
             if (currentActiveInput && selectedStationName) {
-                currentActiveInput.value = `Stasiun ${selectedStationName}`;
-                const modalEl = document.getElementById('locationModal');
-                const mi = bootstrap.Modal.getInstance(modalEl);
-                if (mi) mi.hide();
+                const val = `Stasiun ${selectedStationName}`;
+                currentActiveInput.value = val;
+
+                // Dispatch input & change events so form validators and other
+                // JS listeners recognize the programmatic value change
+                currentActiveInput.dispatchEvent(new Event('input', { bubbles: true }));
+                currentActiveInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+                // Close the modal
+                if (locationModalInstance) locationModalInstance.hide();
+            }
+        });
+    }
+
+    // When modal is fully hidden, ensure the value is still set
+    if (locationModalEl) {
+        locationModalEl.addEventListener('hidden.bs.modal', () => {
+            if (currentActiveInput && selectedStationName) {
+                const val = `Stasiun ${selectedStationName}`;
+                if (currentActiveInput.value !== val) {
+                    currentActiveInput.value = val;
+                    currentActiveInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    currentActiveInput.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             }
         });
     }

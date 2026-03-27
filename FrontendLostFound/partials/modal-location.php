@@ -108,6 +108,12 @@
 
 <style>
 /* Modal Sizing — near fullscreen for maximum map space */
+#locationModal {
+    z-index: 1060 !important; /* sit above finder-modal (edit modals) */
+}
+#locationModal ~ .modal-backdrop {
+    z-index: 1055 !important;
+}
 #locationModal .modal-dialog {
     max-width: 95vw;
     width: 95vw;
