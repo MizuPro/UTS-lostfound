@@ -1,0 +1,1 @@
+Untuk backend ini, jika ada perubahan atau penambahan fitur, pastikan untuk memperbarui dokumentasi API di file `API_DOCUMENTATION_versi2.md` agar konsumen API dapat memahami endpoint baru atau perubahan yang terjadi. Dokumentasi yang lengkap dan terstruktur dengan baik sangat penting untuk memudahkan integrasi dan penggunaan API oleh pihak ketiga.

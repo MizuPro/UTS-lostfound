@@ -1,0 +1,84 @@
+@baseUrl = http://localhost/backendlnf/BackendLostFound
+@email = test_pelapor@example.com
+@password = password123
+@token = {{login.response.body.data.token}}
+
+### 1. Health Check
+GET {{baseUrl}}/
+Accept: application/json
+
+### 
+
+### 2. Registrasi Akun Pelapor
+# Perhatikan role di bawah ini sudah diset menjadi "pelapor"
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Budi Sang Pelapor",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "role": "pelapor"
+}
+
+###
+
+### 3. Login Pelapor
+# Jangan lupa klik Send Request ini agar token otomatis tersimpan!
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+###
+
+### 4. Cek Profil (Membutuhkan Token)
+GET {{baseUrl}}/api/auth/me
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### 5. Lihat Daftar Barang Temuan (Sebagai Pelapor)
+# Pelapor hanya bisa melihat data terbatas (id, nama_barang, waktu, status)
+# Pelapor TIDAK BISA melihat lokasi spesifik atau deskripsi detail untuk mencegah klaim palsu
+GET {{baseUrl}}/api/found-items
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### 6. Lapor Barang Hilang (Membutuhkan Token)
+# Pelapor bisa membuat laporan kehilangannya sendiri
+POST {{baseUrl}}/api/lost-reports
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nama_barang": "Dompet Kulit Coklat",
+    "deskripsi": "Dompet kulit warna coklat tua, di dalamnya ada KTP atas nama Budi",
+    "lokasi": "KRL Rute Bogor - Jakarta Kota, Gerbong 3",
+    "waktu_hilang": "2026-03-24 08:15:00"
+}
+
+###
+
+### 7. Lihat Laporan Kehilangan Milik Sendiri
+# Pelapor hanya bisa melihat daftar laporan yang dia buat sendiri.
+GET {{baseUrl}}/api/lost-reports
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### 8. Logout
+POST {{baseUrl}}/api/auth/logout
+Accept: application/json
+Authorization: Bearer {{token}}
