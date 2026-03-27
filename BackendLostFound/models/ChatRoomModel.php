@@ -36,7 +36,19 @@ class ChatRoomModel
     public function getRoomsByUser($user_id, $role)
     {
         $column = $role === 'petugas' ? 'petugas_id' : 'pelapor_id';
-        $stmt = $this->pdo->prepare("SELECT * FROM chat_rooms WHERE $column = ? ORDER BY created_at DESC");
+        $stmt = $this->pdo->prepare(
+            "SELECT
+                cr.*,
+                petugas.name AS petugas_name,
+                pelapor.name AS pelapor_name,
+                lk.nama_barang AS laporan_nama
+            FROM chat_rooms cr
+            JOIN users petugas ON petugas.id = cr.petugas_id
+            JOIN users pelapor ON pelapor.id = cr.pelapor_id
+            LEFT JOIN laporan_kehilangan lk ON lk.id = cr.laporan_id
+            WHERE cr.$column = ?
+            ORDER BY cr.created_at DESC"
+        );
         $stmt->execute([$user_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

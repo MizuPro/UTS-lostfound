@@ -101,13 +101,27 @@ class ChatRoomController
 
     public function getFirebaseToken()
     {
-        $user = $GLOBALS['auth_user'];
+        $user = isset($GLOBALS['auth_user']) ? $GLOBALS['auth_user'] : null;
+        if (!$user || !isset($user['user_id'])) {
+            ResponseHelper::error("User tidak terautentikasi", 401);
+            return;
+        }
+
         $uid = (string)$user['user_id'];
-        $role = $user['role'];
+        if ($uid === '' || strlen($uid) > 128) {
+            ResponseHelper::error("UID Firebase tidak valid", 500);
+            return;
+        }
+
+        $role = isset($user['role']) ? $user['role'] : 'pelapor';
         $name = isset($user['name']) ? $user['name'] : 'User ' . $uid;
         
         // Simulasikan username. Jika tidak ada field username, pakai email sebelum @
-        $username = isset($user['username']) ? $user['username'] : explode('@', $user['email'])[0];
+        $username = isset($user['username']) ? $user['username'] : null;
+        if (!$username) {
+            $email = isset($user['email']) ? (string)$user['email'] : '';
+            $username = strpos($email, '@') !== false ? explode('@', $email)[0] : ('user' . $uid);
+        }
 
         $serviceAccountPath = __DIR__ . '/../firebase-service-account.json';
         
@@ -117,7 +131,12 @@ class ChatRoomController
         }
 
         $serviceAccount = json_decode(file_get_contents($serviceAccountPath), true);
-        if (!$serviceAccount || !isset($serviceAccount['client_email']) || !isset($serviceAccount['private_key'])) {
+        if (
+            !$serviceAccount ||
+            !isset($serviceAccount['client_email']) ||
+            !isset($serviceAccount['private_key']) ||
+            trim((string)$serviceAccount['private_key']) === ''
+        ) {
             ResponseHelper::error("Format file Service Account Firebase tidak valid", 500);
             return;
         }
@@ -143,21 +162,40 @@ class ChatRoomController
             'alg' => 'RS256',
             'typ' => 'JWT'
         ];
+        if (!empty($serviceAccount['private_key_id'])) {
+            $header['kid'] = $serviceAccount['private_key_id'];
+        }
 
-        $base64UrlHeader = rtrim(strtr(base64_encode(json_encode($header)), '+/', '-_'), '=');
-        $base64UrlPayload = rtrim(strtr(base64_encode(json_encode($payload)), '+/', '-_'), '=');
+        $encodedHeader = json_encode($header, JSON_UNESCAPED_SLASHES);
+        $encodedPayload = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        if ($encodedHeader === false || $encodedPayload === false) {
+            ResponseHelper::error("Gagal membentuk payload token Firebase", 500);
+            return;
+        }
+
+        $base64UrlHeader = rtrim(strtr(base64_encode($encodedHeader), '+/', '-_'), '=');
+        $base64UrlPayload = rtrim(strtr(base64_encode($encodedPayload), '+/', '-_'), '=');
 
         $dataToSign = $base64UrlHeader . '.' . $base64UrlPayload;
         
         $signature = '';
-        $privateKey = @openssl_pkey_get_private($serviceAccount['private_key']);
+        $privateKey = openssl_pkey_get_private($serviceAccount['private_key']);
         
         if (!$privateKey) {
             ResponseHelper::error("Gagal membaca Private Key dari Service Account", 500);
             return;
         }
 
-        @openssl_sign($dataToSign, $signature, $privateKey, 'sha256WithRSAEncryption');
+        $signed = openssl_sign($dataToSign, $signature, $privateKey, OPENSSL_ALGO_SHA256);
+        if (is_resource($privateKey)) {
+            openssl_free_key($privateKey);
+        }
+
+        if (!$signed || empty($signature)) {
+            ResponseHelper::error("Gagal menandatangani custom token Firebase", 500);
+            return;
+        }
+
         $base64UrlSignature = rtrim(strtr(base64_encode($signature), '+/', '-_'), '=');
 
         $customToken = $base64UrlHeader . '.' . $base64UrlPayload . '.' . $base64UrlSignature;

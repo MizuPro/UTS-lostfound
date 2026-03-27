@@ -1,15 +1,17 @@
 <!-- partials/chat-widget.php -->
 <?php $isOfficer = isset($isOfficerPage) && $isOfficerPage; ?>
-<div id="krlChatWidget" class="chat-widget minimized" data-officer="<?= $isOfficer ? 'true' : 'false' ?>">
-    <!-- Minimized State (Button) -->
-    <button id="chatToggleBtn" class="chat-toggle-btn">
+<div
+    id="krlChatWidget"
+    class="chat-widget minimized"
+    data-officer="<?= $isOfficer ? 'true' : 'false' ?>"
+    data-login-url="<?= htmlspecialchars(frontend_url('login.php')) ?>"
+>
+    <button id="chatToggleBtn" class="chat-toggle-btn" type="button" aria-label="Buka chat">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-message-circle"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-        <span class="chat-badge"><?= $isOfficer ? '2' : '1' ?></span>
+        <span id="chatBadge" class="chat-badge">0</span>
     </button>
 
-    <!-- Maximized State (Window) -->
     <div class="chat-window">
-        <!-- Header -->
         <div class="chat-header">
             <div class="chat-header-info">
                 <?php if ($isOfficer): ?>
@@ -20,40 +22,33 @@
                     <span>Customer Service KAI</span>
                 <?php endif; ?>
             </div>
-            <button id="chatMinimizeBtn" class="chat-minimize-btn">&minus;</button>
+            <button id="chatMinimizeBtn" class="chat-minimize-btn" type="button" aria-label="Tutup chat">&minus;</button>
         </div>
-        
-        <!-- Messages Area -->
-        <div class="chat-messages">
+
+        <div class="chat-top-tools">
+            <div id="chatStatus" class="chat-status">Klik chat untuk mulai.</div>
+
+            <div id="chatRoomControls" class="chat-room-controls hidden">
+                <select id="chatRoomSelect" class="chat-select" aria-label="Pilih room chat"></select>
+                <button id="chatRefreshRoomsBtn" class="chat-tool-btn" type="button">Refresh</button>
+            </div>
+
             <?php if ($isOfficer): ?>
-                <div class="message msg-received">
-                    <div class="msg-bubble">Permisi min, saya sepertinya kehilangan dompet hitam di Stasiun Manggarai pagi ini.</div>
-                    <div class="msg-time">08:05 AM</div>
-                </div>
-                <div class="message msg-received">
-                    <div class="msg-bubble">Kira-kira prosedur lapornya bagaimana ya kalau saya sudah terlanjur pulang?</div>
-                    <div class="msg-time">08:06 AM</div>
-                </div>
-            <?php else: ?>
-                <div class="message msg-received">
-                    <div class="msg-bubble">Halo! Ada yang bisa kami bantu terkait layanan Lost and Found KRL?</div>
-                    <div class="msg-time">08:00 AM</div>
-                </div>
-                <div class="message msg-sent">
-                    <div class="msg-bubble">Iya min, saya sepertinya kehilangan dompet di Stasiun Manggarai pagi ini.</div>
-                    <div class="msg-time">08:05 AM</div>
-                </div>
-                <div class="message msg-received">
-                    <div class="msg-bubble">Baik kak, silakan menuju halaman <b>Lapor Kehilangan</b> ya untuk mengisi data barang secara lengkap agar segera kami telusuri.</div>
-                    <div class="msg-time">08:06 AM</div>
+                <div id="chatOfficerCreateWrap" class="chat-room-controls hidden">
+                    <select id="chatLaporanSelect" class="chat-select" aria-label="Pilih laporan"></select>
+                    <button id="chatCreateRoomBtn" class="chat-tool-btn" type="button">Buat Room</button>
                 </div>
             <?php endif; ?>
         </div>
-        
-        <!-- Input Area -->
+
+        <div id="chatMessages" class="chat-messages">
+            <div id="chatMessagesState" class="helper-box">Belum ada percakapan dipilih.</div>
+        </div>
+
         <div class="chat-input-area">
-            <input type="text" id="chatInput" placeholder="Ketik pesan..." class="chat-input">
-            <button id="chatSendBtn" class="chat-send-btn">
+            <label for="chatInput" class="visually-hidden">Ketik pesan chat</label>
+            <input type="text" id="chatInput" placeholder="Ketik pesan..." class="chat-input" disabled>
+            <button id="chatSendBtn" class="chat-send-btn" type="button" disabled aria-label="Kirim pesan">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </button>
         </div>
@@ -109,7 +104,7 @@
 /* Chat Window */
 .chat-window {
     width: 350px;
-    height: 450px;
+    height: 500px;
     background: #ffffff;
     border-radius: 16px;
     box-shadow: var(--shadow, 0 18px 40px rgba(0,0,0,0.15));
@@ -175,6 +170,53 @@
     background: rgba(0,0,0,0.1);
 }
 
+/* Top Tools */
+.chat-top-tools {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.chat-status {
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-soft, #66646d);
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 8px 10px;
+}
+.chat-room-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.chat-select {
+    flex: 1;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #fff;
+    border-radius: 10px;
+    font-size: 12px;
+    padding: 8px;
+    min-width: 0;
+}
+.chat-tool-btn {
+    border: 1px solid rgba(197, 29, 29, 0.25);
+    color: #c51d1d;
+    background: rgba(197, 29, 29, 0.08);
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.chat-tool-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* Chat Messages */
 .chat-messages {
     flex: 1;
@@ -201,6 +243,7 @@
     border-radius: 16px;
     font-size: 14px;
     line-height: 1.5;
+    word-wrap: break-word;
 }
 .msg-received .msg-bubble {
     background: #ffffff;
@@ -239,6 +282,10 @@
     outline: none;
     background: #f8f9fa;
 }
+.chat-input:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
 .chat-send-btn {
     width: 40px;
     height: 40px;
@@ -249,7 +296,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.5; /* disabled state */
+    opacity: 1;
+    cursor: pointer;
+}
+.chat-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Mobile Responsiveness */
