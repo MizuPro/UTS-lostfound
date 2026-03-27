@@ -52,7 +52,7 @@ $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // Strip base path agar routing bekerja di subdirektori (misal: /backend-Lost-Found)
 $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
-if ($basePath !== '' && strpos($requestUri, $basePath) === 0) {
+if ($basePath !== '' && stripos($requestUri, $basePath) === 0) {
     $requestUri = substr($requestUri, strlen($basePath));
 }
 
