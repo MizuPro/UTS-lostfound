@@ -11,9 +11,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusInput = document.getElementById('statusFound');
 
     async function loadItems(params = new URLSearchParams()) {
-        state.classList.remove('hidden');
-        state.innerHTML = '<div class="loading-spinner"></div>';
-        grid.innerHTML = '';
+        state.classList.add('hidden');
+        grid.innerHTML = Array(4).fill(`
+            <article class="found-card skeleton">
+                <div class="found-card-media" style="background: rgba(0,0,0,0.05); min-height: 190px;"></div>
+                <div class="found-card-body">
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-text"></div>
+                    <div class="skeleton-text skeleton-text-short"></div>
+                </div>
+            </article>
+        `).join('');
 
         try {
             const query = params.toString() ? `?${params.toString()}` : '';
@@ -21,8 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const items = response?.data?.found_items || [];
 
             if (!items.length) {
+                grid.innerHTML = '';
                 state.classList.remove('hidden');
-                state.textContent = 'Belum ada barang temuan petugas saat ini.';
+                state.innerHTML = '<i class="bi bi-inbox fs-1 d-block mb-3 text-muted"></i>Belum ada barang temuan petugas saat ini.';
                 return;
             }
 
@@ -44,8 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </article>
             `).join('');
         } catch (error) {
+            grid.innerHTML = '';
             state.classList.remove('hidden');
-            state.textContent = FinderApp.getApiErrorMessage(error, 'Gagal memuat data barang temuan.');
+            state.innerHTML = '<i class="bi bi-exclamation-triangle fs-1 d-block mb-3 text-danger"></i>' + FinderApp.escapeHtml(FinderApp.getApiErrorMessage(error, 'Gagal memuat data barang temuan.'));
         }
     }
 

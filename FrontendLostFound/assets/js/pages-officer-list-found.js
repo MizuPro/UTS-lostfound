@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderItems(list) {
         if (!list.length) {
-            state.classList.remove('hidden');
-            state.textContent = 'Belum ada barang temuan.';
             grid.innerHTML = '';
+            state.classList.remove('hidden');
+            state.innerHTML = '<i class="bi bi-inbox fs-1 d-block mb-3 text-muted"></i>Belum ada barang temuan.';
             return;
         }
 
@@ -49,17 +49,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadItems(params = new URLSearchParams()) {
-        state.classList.remove('hidden');
-        state.innerHTML = '<div class="loading-spinner"></div>';
-        grid.innerHTML = '';
+        state.classList.add('hidden');
+        grid.innerHTML = Array(4).fill(`
+            <article class="found-card officer-found-card skeleton">
+                <div class="found-card-media image-media" style="background: rgba(0,0,0,0.05); min-height: 190px;"></div>
+                <div class="found-card-body">
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-text"></div>
+                    <div class="skeleton-text skeleton-text-short"></div>
+                    <div class="report-actions mt-16" style="gap: 10px; display: flex;">
+                        <div class="skeleton-text" style="width: 80px; height: 36px; border-radius: 999px;"></div>
+                        <div class="skeleton-text" style="width: 80px; height: 36px; border-radius: 999px;"></div>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+
         try {
             const query = params.toString() ? `?${params.toString()}` : '';
             const response = await FinderApp.apiFetch('/api/found-items' + query);
             items = response?.data?.found_items || [];
             renderItems(items);
         } catch (error) {
+            grid.innerHTML = '';
             state.classList.remove('hidden');
-            state.textContent = FinderApp.getApiErrorMessage(error, 'Gagal memuat barang temuan.');
+            state.innerHTML = '<i class="bi bi-exclamation-triangle fs-1 d-block mb-3 text-danger"></i>' + FinderApp.getApiErrorMessage(error, 'Gagal memuat barang temuan.');
         }
     }
 
@@ -139,8 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = document.getElementById('officerEditFoundPhoto').files[0];
         if (file) formData.append('foto', file);
 
-        btn.disabled = true;
-        btn.textContent = 'Menyimpan...';
+        btn.classList.add('loading');
         try {
             await FinderApp.apiFetch(`/api/found-items/${id}`, {
                 method: 'POST',
@@ -152,8 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Gagal memperbarui barang temuan.'), 'error');
         } finally {
-            btn.disabled = false;
-            btn.textContent = 'Simpan Perubahan';
+            btn.classList.remove('loading');
         }
     });
 
@@ -161,8 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const btn = event.currentTarget.querySelector('button[type="submit"]');
         const id = document.getElementById('officerArchiveFoundId').value;
-        btn.disabled = true;
-        btn.textContent = 'Mengarsipkan...';
+        btn.classList.add('loading');
         try {
             await FinderApp.apiFetch(`/api/found-items/${id}/archive`, {
                 method: 'PATCH',
@@ -174,8 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Gagal mengarsipkan barang.'), 'error');
         } finally {
-            btn.disabled = false;
-            btn.textContent = 'Arsipkan';
+            btn.classList.remove('loading');
         }
     });
 

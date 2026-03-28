@@ -21,18 +21,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!form) return;
 
+    // Inline validation
+    ['name', 'email', 'password', 'confirm_password'].forEach(name => {
+        const input = form.querySelector(`[name="${name}"]`);
+        if(input) {
+            input.addEventListener('input', () => {
+                const group = input.closest('.form-group');
+                if (input.value.trim() !== '') {
+                    group.classList.add('has-success');
+                    group.classList.remove('has-error');
+                } else {
+                    group.classList.add('has-error');
+                    group.classList.remove('has-success');
+                }
+            });
+        }
+    });
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Memproses...';
+        submitBtn.classList.add('loading');
 
         const password = form.password.value;
         const confirmPassword = form.confirm_password.value;
         if (password !== confirmPassword) {
             FinderApp.showToast('Konfirmasi password tidak sama.', 'error');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit';
+            submitBtn.classList.remove('loading');
             return;
         }
 
@@ -51,9 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = window.APP_CONFIG.FRONTEND_BASE_URL + '/login.php';
         } catch (error) {
             FinderApp.showToast(error.message || 'Registrasi gagal.', 'error');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit';
+            submitBtn.classList.remove('loading');
         }
     });
 });

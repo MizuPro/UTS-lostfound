@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderReports(items) {
         if (!items.length) {
-            state.classList.remove('hidden');
-            state.textContent = 'Belum ada laporan kehilangan.';
             grid.innerHTML = '';
+            state.classList.remove('hidden');
+            state.innerHTML = '<i class="bi bi-inbox fs-1 d-block mb-3 text-muted"></i>Belum ada laporan kehilangan.';
             return;
         }
 
@@ -49,9 +49,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadReports(params = new URLSearchParams()) {
-        state.classList.remove('hidden');
-        state.innerHTML = '<div class="loading-spinner"></div>';
-        grid.innerHTML = '';
+        state.classList.add('hidden');
+        grid.innerHTML = Array(4).fill(`
+            <article class="officer-card skeleton">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-text"></div>
+                <div class="meta-grid mt-16">
+                    <div class="skeleton-text" style="height: 40px; margin: 0;"></div>
+                    <div class="skeleton-text" style="height: 40px; margin: 0;"></div>
+                    <div class="skeleton-text" style="height: 40px; margin: 0;"></div>
+                </div>
+            </article>
+        `).join('');
 
         try {
             const query = params.toString() ? `?${params.toString()}` : '';
@@ -59,8 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
             reports = response?.data?.lost_reports || [];
             renderReports(reports);
         } catch (error) {
+            grid.innerHTML = '';
             state.classList.remove('hidden');
-            state.textContent = FinderApp.getApiErrorMessage(error, 'Gagal memuat laporan kehilangan.');
+            state.innerHTML = '<i class="bi bi-exclamation-triangle fs-1 d-block mb-3 text-danger"></i>' + FinderApp.getApiErrorMessage(error, 'Gagal memuat laporan kehilangan.');
         }
     }
 
@@ -133,8 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('officerEditLostTime').value
         );
 
-        btn.disabled = true;
-        btn.textContent = 'Menyimpan...';
+        btn.classList.add('loading');
         try {
             await FinderApp.apiFetch(`/api/lost-reports/${id}`, {
                 method: 'PUT',
@@ -152,8 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Gagal memperbarui laporan.'), 'error');
         } finally {
-            btn.disabled = false;
-            btn.textContent = 'Simpan Perubahan';
+            btn.classList.remove('loading');
         }
     });
 

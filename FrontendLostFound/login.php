@@ -1,4 +1,3 @@
-
 <?php
 $pageTitle = 'Login - Finder by KAI';
 $pageClass = 'theme-auth';
@@ -38,9 +37,11 @@ require_once __DIR__ . '/includes/url.php';
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <div class="password-input-wrap">
+                    <div class="password-wrap">
                         <input type="password" id="password" name="password" placeholder="Masukkan password" required>
-                        <button type="button" class="toggle-password" data-target="password">👁</button>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="inline-row between">
@@ -56,4 +57,17 @@ require_once __DIR__ . '/includes/url.php';
         </div>
     </section>
 </main>
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+}
+</script>
 <?php $pageScript = 'assets/js/pages-login.js'; require_once __DIR__ . '/partials/footer.php'; ?>

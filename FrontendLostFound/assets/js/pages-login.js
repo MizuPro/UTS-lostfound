@@ -6,11 +6,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!form) return;
 
+    // Inline validation
+    [emailInput, passwordInput].forEach(input => {
+        input.addEventListener('input', () => {
+            const group = input.closest('.form-group');
+            if (input.value.trim() !== '') {
+                group.classList.add('has-success');
+                group.classList.remove('has-error');
+            } else {
+                group.classList.add('has-error');
+                group.classList.remove('has-success');
+            }
+        });
+    });
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Memproses...';
+        submitBtn.classList.add('loading');
 
         const payload = {
             email: emailInput.value.trim(),
@@ -29,9 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = window.APP_CONFIG.FRONTEND_BASE_URL + FinderApp.getHomePathByRole(data.user?.role);
         } catch (error) {
             FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Login gagal.'), 'error');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit';
+            submitBtn.classList.remove('loading');
         }
     });
 });
