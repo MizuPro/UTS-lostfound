@@ -68,10 +68,11 @@ class ResponseHelper
     }
 
     /**
-     * Response 422 Validation Error
+     * Balasan error validasi (422)
      */
     public static function validationError(array $errors): void
     {
+        file_put_contents(__DIR__ . '/../storage/logs/validation.log', date('Y-m-d H:i:s') . ' - ' . json_encode($errors) . "\n", FILE_APPEND);
         self::error('Validasi gagal.', 422, $errors);
     }
 }

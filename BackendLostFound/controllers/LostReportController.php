@@ -107,8 +107,10 @@ class LostReportController
             ResponseHelper::validationError(['lokasi' => 'Lokasi maksimal 200 karakter.']);
         }
 
-        $waktu = \DateTime::createFromFormat('Y-m-d H:i:s', $input['waktu_hilang']);
-        if (!$waktu) {
+        try {
+            $waktu = new \DateTime($input['waktu_hilang']);
+            $input['waktu_hilang'] = $waktu->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
             ResponseHelper::validationError(['waktu_hilang' => 'Format waktu_hilang harus: YYYY-MM-DD HH:MM:SS']);
         }
 
@@ -186,8 +188,10 @@ class LostReportController
             ResponseHelper::validationError(['lokasi' => 'Lokasi maksimal 200 karakter.']);
         }
 
-        $waktu = \DateTime::createFromFormat('Y-m-d H:i:s', $input['waktu_hilang']);
-        if (!$waktu) {
+        try {
+            $waktu = new \DateTime($input['waktu_hilang']);
+            $input['waktu_hilang'] = $waktu->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
             ResponseHelper::validationError(['waktu_hilang' => 'Format waktu_hilang harus: YYYY-MM-DD HH:MM:SS']);
         }
 

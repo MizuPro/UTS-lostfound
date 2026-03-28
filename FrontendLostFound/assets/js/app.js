@@ -150,7 +150,11 @@
 
     function combineDateTime(date, time) {
         if (!date || !time) return '';
-        return `${date} ${time}:00`;
+        const parts = time.split(':');
+        let hh = (parts[0] || '00').trim().padStart(2, '0');
+        let mm = (parts[1] || '00').trim().padStart(2, '0');
+        let ss = (parts[2] ? parts[2].split('.')[0] : '00').trim().padStart(2, '0');
+        return `${date} ${hh}:${mm}:${ss}`;
     }
 
     function statusBadgeClass(status) {

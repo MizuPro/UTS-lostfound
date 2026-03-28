@@ -54,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
             FinderApp.showToast('Barang temuan berhasil ditambahkan.', 'success');
             form.reset();
         } catch (error) {
-            FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Gagal menambahkan barang temuan.'), 'error');
+            console.error('API Error Payload:', error.payload);
+            FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Gagal mencatat barang temuan.'), 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Submit';

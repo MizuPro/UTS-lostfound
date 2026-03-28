@@ -342,10 +342,15 @@ class PickupScheduleController
         }
     }
 
-    private function isValidDateTime(string $value): bool
+    private function isValidDateTime(string &$value): bool
     {
-        $dt = \DateTime::createFromFormat('Y-m-d H:i:s', $value);
-        return $dt && $dt->format('Y-m-d H:i:s') === $value;
+        try {
+            $dt = new \DateTime($value);
+            $value = $dt->format('Y-m-d H:i:s');
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }
 

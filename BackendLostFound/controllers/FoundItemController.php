@@ -87,6 +87,8 @@ class FoundItemController
     // ── POST /api/found-items ────────────────────────────────────────────────
     public function store(): void
     {
+        file_put_contents(__DIR__ . '/../log.txt', date('Y-m-d H:i:s') . "\nPOST: " . print_r($_POST, true) . "\nFILES: " . print_r($_FILES, true) . "\nINPUT: " . print_r(ValidationHelper::getInput(), true) . "\n===\n", FILE_APPEND);
+
         $authUser = $GLOBALS['auth_user'] ?? null;
 
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
@@ -108,8 +110,10 @@ class FoundItemController
             ResponseHelper::validationError(['lokasi' => 'Lokasi maksimal 200 karakter.']);
         }
 
-        $waktu = \DateTime::createFromFormat('Y-m-d H:i:s', $input['waktu_temuan']);
-        if (!$waktu) {
+        try {
+            $waktu = new \DateTime($input['waktu_temuan']);
+            $input['waktu_temuan'] = $waktu->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
             ResponseHelper::validationError(['waktu_temuan' => 'Format waktu_temuan harus: YYYY-MM-DD HH:MM:SS']);
         }
 
@@ -179,8 +183,10 @@ class FoundItemController
             ResponseHelper::validationError(['lokasi' => 'Lokasi maksimal 200 karakter.']);
         }
 
-        $waktu = \DateTime::createFromFormat('Y-m-d H:i:s', $input['waktu_temuan']);
-        if (!$waktu) {
+        try {
+            $waktu = new \DateTime($input['waktu_temuan']);
+            $input['waktu_temuan'] = $waktu->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
             ResponseHelper::validationError(['waktu_temuan' => 'Format waktu_temuan harus: YYYY-MM-DD HH:MM:SS']);
         }
 
