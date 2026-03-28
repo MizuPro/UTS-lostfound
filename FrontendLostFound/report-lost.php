@@ -28,7 +28,7 @@ require_once __DIR__ . '/partials/navbar.php';
 
                 <div class="report-card">
                     <h2>Informasi Barang Hilang</h2>
-                    <form id="lostReportForm" class="form-stack">
+                    <form id="lostReportForm" class="form-stack" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="lostItemName">Nama Barang <span class="required">*</span></label>
                             <input type="text" id="lostItemName" name="nama_barang" placeholder="Contoh: Dompet hitam" required>
@@ -68,9 +68,10 @@ require_once __DIR__ . '/partials/navbar.php';
                             <textarea id="lostDescription" name="deskripsi" rows="6" placeholder="Jelaskan ciri barang sedetail mungkin. Contoh: warna, merek, ukuran, isi, dan ciri khusus lainnya." required></textarea>
                         </div>
 
-                        <div class="upload-card disabled-upload">
-                            <h3>Unggah foto belum tersedia</h3>
-                            <p>Saat ini laporan kehilangan belum mendukung unggah foto. Anda tetap bisa menjelaskan ciri barang selengkap mungkin pada kolom detail.</p>
+                        <div class="form-group">
+                            <label for="lostPhoto">Foto Barang (Opsional)</label>
+                            <input type="file" id="lostPhoto" accept="image/jpeg,image/png,image/webp">
+                            <span class="helper-text">Format: JPEG/PNG/WebP, maksimal 5 MB.</span>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-wide">Submit</button>

@@ -1,0 +1,403 @@
+[Sat Mar 28 07:56:12 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Sat Mar 28 07:56:45 2026] [::1]:34260 Accepted
+[Sat Mar 28 07:56:45 2026] [::1]:34260 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:56:45 2026] [::1]:34260 Closing
+[Sat Mar 28 07:56:45 2026] [::1]:34264 Accepted
+[Sat Mar 28 07:56:45 2026] [::1]:34272 Accepted
+[Sat Mar 28 07:56:45 2026] [::1]:34286 Accepted
+[Sat Mar 28 07:56:45 2026] [::1]:34300 Accepted
+[Sat Mar 28 07:56:45 2026] [::1]:34316 Accepted
+[Sat Mar 28 07:56:45 2026] [::1]:34264 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:56:45 2026] [::1]:34264 Closing
+[Sat Mar 28 07:56:45 2026] [::1]:34272 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:56:45 2026] [::1]:34286 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:56:45 2026] [::1]:34300 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:56:45 2026] [::1]:34316 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:56:45 2026] [::1]:34272 Closing
+[Sat Mar 28 07:56:45 2026] [::1]:34286 Closing
+[Sat Mar 28 07:56:45 2026] [::1]:34300 Closing
+[Sat Mar 28 07:56:45 2026] [::1]:34316 Closing
+[Sat Mar 28 07:56:47 2026] [::1]:34332 Accepted
+[Sat Mar 28 07:56:47 2026] [::1]:34332 [500]: POST /BackendLostFound/api/auth/login
+[Sat Mar 28 07:56:47 2026] [::1]:34332 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:34342 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:34342 [200]: GET /FrontendLostFound/report-lost.php
+[Sat Mar 28 07:56:49 2026] [::1]:34342 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44320 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44330 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44338 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44342 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44348 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44320 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:56:49 2026] [::1]:44320 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44330 [200]: GET /FrontendLostFound/assets/js/pages-report-lost.js
+[Sat Mar 28 07:56:49 2026] [::1]:44330 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44338 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:56:49 2026] [::1]:44342 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:56:49 2026] [::1]:44348 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:56:49 2026] [::1]:44338 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44342 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44348 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44362 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44362 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:56:49 2026] [::1]:44362 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44370 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44370 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:56:49 2026] [::1]:44370 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44376 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44384 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44392 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44396 Accepted
+[Sat Mar 28 07:56:49 2026] [::1]:44376 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:56:49 2026] [::1]:44376 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44384 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:56:49 2026] [::1]:44392 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:56:49 2026] [::1]:44396 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:56:49 2026] [::1]:44384 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44392 Closing
+[Sat Mar 28 07:56:49 2026] [::1]:44396 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44412 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44412 [200]: GET /FrontendLostFound/reservation-list.php
+[Sat Mar 28 07:56:52 2026] [::1]:44412 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44418 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44424 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44428 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44436 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44418 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:56:52 2026] [::1]:44418 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44442 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44442 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:56:52 2026] [::1]:44424 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:56:52 2026] [::1]:44428 [200]: GET /FrontendLostFound/assets/js/pages-reservation-list.js
+[Sat Mar 28 07:56:52 2026] [::1]:44436 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:56:52 2026] [::1]:44442 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44424 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44428 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44436 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44444 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44444 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:56:52 2026] [::1]:44444 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44456 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44470 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44456 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:56:52 2026] [::1]:44486 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44470 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:56:52 2026] [::1]:44496 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44506 Accepted
+[Sat Mar 28 07:56:52 2026] [::1]:44456 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44470 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44486 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:56:52 2026] [::1]:44486 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44496 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:56:52 2026] [::1]:44496 Closing
+[Sat Mar 28 07:56:52 2026] [::1]:44506 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:56:52 2026] [::1]:44506 Closing
+[Sat Mar 28 07:56:54 2026] [::1]:44510 Accepted
+[Sat Mar 28 07:56:54 2026] [::1]:44510 [200]: GET /FrontendLostFound/profile.php
+[Sat Mar 28 07:56:54 2026] [::1]:44510 Closing
+[Sat Mar 28 07:56:54 2026] [::1]:44526 Accepted
+[Sat Mar 28 07:56:54 2026] [::1]:44536 Accepted
+[Sat Mar 28 07:56:54 2026] [::1]:44542 Accepted
+[Sat Mar 28 07:56:54 2026] [::1]:44526 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:56:54 2026] [::1]:44526 Closing
+[Sat Mar 28 07:56:54 2026] [::1]:44558 Accepted
+[Sat Mar 28 07:56:54 2026] [::1]:44566 Accepted
+[Sat Mar 28 07:56:54 2026] [::1]:44536 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:56:54 2026] [::1]:44542 [200]: GET /FrontendLostFound/assets/js/pages-profile.js
+[Sat Mar 28 07:56:54 2026] [::1]:44536 Closing
+[Sat Mar 28 07:56:54 2026] [::1]:44542 Closing
+[Sat Mar 28 07:56:54 2026] [::1]:44558 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:56:54 2026] [::1]:44558 Closing
+[Sat Mar 28 07:56:54 2026] [::1]:44566 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:56:54 2026] [::1]:44566 Closing
+[Sat Mar 28 07:56:54 2026] [::1]:44576 Accepted
+[Sat Mar 28 07:56:54 2026] [::1]:44576 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:56:54 2026] [::1]:44576 Closing
+[Sat Mar 28 07:56:55 2026] [::1]:44584 Accepted
+[Sat Mar 28 07:56:55 2026] [::1]:44598 Accepted
+[Sat Mar 28 07:56:55 2026] [::1]:44584 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:56:55 2026] [::1]:44610 Accepted
+[Sat Mar 28 07:56:55 2026] [::1]:44598 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:56:55 2026] [::1]:44620 Accepted
+[Sat Mar 28 07:56:55 2026] [::1]:44610 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:56:55 2026] [::1]:44626 Accepted
+[Sat Mar 28 07:56:55 2026] [::1]:44584 Closing
+[Sat Mar 28 07:56:55 2026] [::1]:44620 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:56:55 2026] [::1]:44598 Closing
+[Sat Mar 28 07:56:55 2026] [::1]:44626 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:56:55 2026] [::1]:44610 Closing
+[Sat Mar 28 07:56:55 2026] [::1]:44620 Closing
+[Sat Mar 28 07:56:55 2026] [::1]:44626 Closing
+[Sat Mar 28 07:58:14 2026] [::1]:48658 Accepted
+[Sat Mar 28 07:58:14 2026] [::1]:48658 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:58:14 2026] [::1]:48658 Closing
+[Sat Mar 28 07:58:14 2026] [::1]:48664 Accepted
+[Sat Mar 28 07:58:14 2026] [::1]:48668 Accepted
+[Sat Mar 28 07:58:14 2026] [::1]:48674 Accepted
+[Sat Mar 28 07:58:14 2026] [::1]:48676 Accepted
+[Sat Mar 28 07:58:14 2026] [::1]:48682 Accepted
+[Sat Mar 28 07:58:14 2026] [::1]:48664 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:58:14 2026] [::1]:48668 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:58:14 2026] [::1]:48674 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:58:14 2026] [::1]:48664 Closing
+[Sat Mar 28 07:58:14 2026] [::1]:48668 Closing
+[Sat Mar 28 07:58:14 2026] [::1]:48674 Closing
+[Sat Mar 28 07:58:14 2026] [::1]:48676 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:58:14 2026] [::1]:48682 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:58:14 2026] [::1]:48676 Closing
+[Sat Mar 28 07:58:14 2026] [::1]:48682 Closing
+[Sat Mar 28 07:58:15 2026] [::1]:48688 Accepted
+[Sat Mar 28 07:58:15 2026] [::1]:48688 [500]: POST /BackendLostFound/api/auth/login
+[Sat Mar 28 07:58:15 2026] [::1]:48688 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48690 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48690 [200]: GET /FrontendLostFound/report-lost.php
+[Sat Mar 28 07:58:17 2026] [::1]:48690 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48698 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48710 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48720 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48736 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48698 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:58:17 2026] [::1]:48698 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48744 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48710 [200]: GET /FrontendLostFound/assets/js/pages-report-lost.js
+[Sat Mar 28 07:58:17 2026] [::1]:48720 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:58:17 2026] [::1]:48744 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:58:17 2026] [::1]:48736 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:58:17 2026] [::1]:48710 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48720 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48744 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48736 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48750 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48750 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:58:17 2026] [::1]:48750 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48756 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48760 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48756 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:58:17 2026] [::1]:48756 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48766 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48778 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48780 Accepted
+[Sat Mar 28 07:58:17 2026] [::1]:48760 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:58:17 2026] [::1]:48760 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48766 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:58:17 2026] [::1]:48766 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48778 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:58:17 2026] [::1]:48778 Closing
+[Sat Mar 28 07:58:17 2026] [::1]:48780 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:58:17 2026] [::1]:48780 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38346 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38346 [200]: GET /FrontendLostFound/reservation-list.php
+[Sat Mar 28 07:58:20 2026] [::1]:38346 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38348 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38348 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:58:20 2026] [::1]:38348 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38352 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38366 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38378 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38380 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38352 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:58:20 2026] [::1]:38366 [200]: GET /FrontendLostFound/assets/js/pages-reservation-list.js
+[Sat Mar 28 07:58:20 2026] [::1]:38378 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:58:20 2026] [::1]:38380 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:58:20 2026] [::1]:38352 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38366 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38378 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38380 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38384 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38384 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:58:20 2026] [::1]:38384 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38394 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38402 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38404 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38420 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38432 Accepted
+[Sat Mar 28 07:58:20 2026] [::1]:38394 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:58:20 2026] [::1]:38394 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38402 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:58:20 2026] [::1]:38402 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38404 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:58:20 2026] [::1]:38404 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38420 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:58:20 2026] [::1]:38420 Closing
+[Sat Mar 28 07:58:20 2026] [::1]:38432 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:58:20 2026] [::1]:38432 Closing
+[Sat Mar 28 07:58:22 2026] [::1]:38446 Accepted
+[Sat Mar 28 07:58:22 2026] [::1]:38446 [200]: GET /FrontendLostFound/profile.php
+[Sat Mar 28 07:58:22 2026] [::1]:38446 Closing
+[Sat Mar 28 07:58:22 2026] [::1]:38458 Accepted
+[Sat Mar 28 07:58:22 2026] [::1]:38474 Accepted
+[Sat Mar 28 07:58:22 2026] [::1]:38478 Accepted
+[Sat Mar 28 07:58:22 2026] [::1]:38494 Accepted
+[Sat Mar 28 07:58:22 2026] [::1]:38500 Accepted
+[Sat Mar 28 07:58:22 2026] [::1]:38458 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:58:22 2026] [::1]:38474 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:58:22 2026] [::1]:38478 [200]: GET /FrontendLostFound/assets/js/pages-profile.js
+[Sat Mar 28 07:58:22 2026] [::1]:38494 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:58:22 2026] [::1]:38500 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:58:22 2026] [::1]:38458 Closing
+[Sat Mar 28 07:58:22 2026] [::1]:38474 Closing
+[Sat Mar 28 07:58:22 2026] [::1]:38478 Closing
+[Sat Mar 28 07:58:22 2026] [::1]:38494 Closing
+[Sat Mar 28 07:58:22 2026] [::1]:38500 Closing
+[Sat Mar 28 07:58:23 2026] [::1]:38506 Accepted
+[Sat Mar 28 07:58:23 2026] [::1]:38506 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:58:23 2026] [::1]:38506 Closing
+[Sat Mar 28 07:58:23 2026] [::1]:38508 Accepted
+[Sat Mar 28 07:58:23 2026] [::1]:38510 Accepted
+[Sat Mar 28 07:58:23 2026] [::1]:38508 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:58:23 2026] [::1]:38522 Accepted
+[Sat Mar 28 07:58:23 2026] [::1]:38510 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:58:23 2026] [::1]:38530 Accepted
+[Sat Mar 28 07:58:23 2026] [::1]:38522 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:58:23 2026] [::1]:38540 Accepted
+[Sat Mar 28 07:58:23 2026] [::1]:38508 Closing
+[Sat Mar 28 07:58:23 2026] [::1]:38530 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:58:23 2026] [::1]:38510 Closing
+[Sat Mar 28 07:58:23 2026] [::1]:38540 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:58:23 2026] [::1]:38522 Closing
+[Sat Mar 28 07:58:23 2026] [::1]:38530 Closing
+[Sat Mar 28 07:58:23 2026] [::1]:38540 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:55978 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:55978 [200]: GET /FrontendLostFound/report-lost.php
+[Sat Mar 28 07:59:17 2026] [::1]:55978 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:55980 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:55994 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:56008 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:56014 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:56030 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:55980 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:59:17 2026] [::1]:55980 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:55994 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:59:17 2026] [::1]:55994 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:56008 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:59:17 2026] [::1]:56008 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:56014 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:59:17 2026] [::1]:56014 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:56030 [200]: GET /FrontendLostFound/assets/js/pages-report-lost.js
+[Sat Mar 28 07:59:17 2026] [::1]:56030 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:56032 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:56032 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:59:17 2026] [::1]:56032 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:56046 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:56046 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:59:17 2026] [::1]:56046 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:56054 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:56054 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:59:17 2026] [::1]:56054 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:56058 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:56060 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:56064 Accepted
+[Sat Mar 28 07:59:17 2026] [::1]:56058 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:59:17 2026] [::1]:56060 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:59:17 2026] [::1]:56064 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:59:17 2026] [::1]:56058 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:56060 Closing
+[Sat Mar 28 07:59:17 2026] [::1]:56064 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47012 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47012 [200]: GET /FrontendLostFound/reservation-list.php
+[Sat Mar 28 07:59:20 2026] [::1]:47012 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47018 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47030 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47018 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:59:20 2026] [::1]:47030 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:59:20 2026] [::1]:47044 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47018 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47030 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47056 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47068 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47056 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:59:20 2026] [::1]:47068 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:59:20 2026] [::1]:47044 [200]: GET /FrontendLostFound/assets/js/pages-reservation-list.js
+[Sat Mar 28 07:59:20 2026] [::1]:47056 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47068 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47044 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47078 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47078 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:59:20 2026] [::1]:47078 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47090 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47100 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47106 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47114 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47126 Accepted
+[Sat Mar 28 07:59:20 2026] [::1]:47090 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:59:20 2026] [::1]:47100 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:59:20 2026] [::1]:47090 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47100 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47106 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:59:20 2026] [::1]:47114 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:59:20 2026] [::1]:47126 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:59:20 2026] [::1]:47106 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47114 Closing
+[Sat Mar 28 07:59:20 2026] [::1]:47126 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47142 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47142 [200]: GET /FrontendLostFound/officer-reservation-list.php
+[Sat Mar 28 07:59:22 2026] [::1]:47142 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47158 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47168 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47184 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47196 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47202 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47158 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:59:22 2026] [::1]:47158 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47168 [200]: GET /FrontendLostFound/assets/js/pages-officer-reservation-list.js
+[Sat Mar 28 07:59:22 2026] [::1]:47168 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47184 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:59:22 2026] [::1]:47196 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:59:22 2026] [::1]:47202 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:59:22 2026] [::1]:47184 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47196 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47202 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47210 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47210 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:59:22 2026] [::1]:47210 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47212 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47226 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47236 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47240 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47254 Accepted
+[Sat Mar 28 07:59:22 2026] [::1]:47212 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:59:22 2026] [::1]:47226 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:59:22 2026] [::1]:47236 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:59:22 2026] [::1]:47212 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47226 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47236 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47240 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:59:22 2026] [::1]:47254 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:59:22 2026] [::1]:47240 Closing
+[Sat Mar 28 07:59:22 2026] [::1]:47254 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47268 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47268 [200]: GET /FrontendLostFound/officer-reservation.php
+[Sat Mar 28 07:59:25 2026] [::1]:47268 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47284 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47290 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47294 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47308 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47284 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:59:25 2026] [::1]:47320 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47284 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47290 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:59:25 2026] [::1]:47294 [200]: GET /FrontendLostFound/assets/js/pages-officer-reservation.js
+[Sat Mar 28 07:59:25 2026] [::1]:47308 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:59:25 2026] [::1]:47320 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:59:25 2026] [::1]:47290 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47294 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47308 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47320 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47330 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47330 [200]: GET /FrontendLostFound/login.php
+[Sat Mar 28 07:59:25 2026] [::1]:47330 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47332 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47340 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47346 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47362 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47332 [200]: GET /FrontendLostFound/assets/css/style.css
+[Sat Mar 28 07:59:25 2026] [::1]:47340 [200]: GET /FrontendLostFound/assets/js/app.js
+[Sat Mar 28 07:59:25 2026] [::1]:47346 [200]: GET /FrontendLostFound/assets/js/krl-location.js
+[Sat Mar 28 07:59:25 2026] [::1]:47370 Accepted
+[Sat Mar 28 07:59:25 2026] [::1]:47362 [200]: GET /FrontendLostFound/assets/js/chat.js
+[Sat Mar 28 07:59:25 2026] [::1]:47370 [200]: GET /FrontendLostFound/assets/js/pages-login.js
+[Sat Mar 28 07:59:25 2026] [::1]:47332 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47340 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47346 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47362 Closing
+[Sat Mar 28 07:59:25 2026] [::1]:47370 Closing

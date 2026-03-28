@@ -18,6 +18,7 @@ $activePage = $activePage ?? '';
             <a href="<?= htmlspecialchars(frontend_url('index.php')) ?>" class="<?= $activePage === 'home' ? 'is-active' : '' ?>">Beranda</a>
             <a href="<?= htmlspecialchars(frontend_url('found.php')) ?>" class="<?= $activePage === 'found' ? 'is-active' : '' ?>">Barang Temuan</a>
             <a href="<?= htmlspecialchars(frontend_url('report-lost.php')) ?>" class="<?= $activePage === 'report-lost' ? 'is-active' : '' ?>">Lapor Kehilangan</a>
+            <a href="<?= htmlspecialchars(frontend_url('reservation-list.php')) ?>" class="<?= $activePage === 'reservation-list' ? 'is-active' : '' ?>">Jadwal Ambil</a>
             <a href="<?= htmlspecialchars(frontend_url('profile.php')) ?>" class="<?= $activePage === 'profile' ? 'is-active' : '' ?>">Profil</a>
         </nav>
 

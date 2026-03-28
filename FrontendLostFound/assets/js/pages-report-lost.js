@@ -54,15 +54,27 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const payload = new FormData();
+        payload.append('nama_barang', namaBarang);
+        payload.append('lokasi', lokasi);
+        payload.append('waktu_hilang', waktuHilang);
+        payload.append('deskripsi', deskripsi);
+
+        const photo = document.getElementById('lostPhoto').files[0];
+        if (photo) {
+            if (photo.size > 5 * 1024 * 1024) {
+                FinderApp.showToast('Ukuran foto terlalu besar. Maksimal 5MB.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit';
+                return;
+            }
+            payload.append('foto', photo);
+        }
+
         try {
             await FinderApp.apiFetch('/api/lost-reports', {
                 method: 'POST',
-                body: {
-                    nama_barang: namaBarang,
-                    lokasi,
-                    waktu_hilang: waktuHilang,
-                    deskripsi,
-                },
+                body: payload,
             });
 
             FinderApp.showToast('Laporan kehilangan berhasil dibuat.', 'success');

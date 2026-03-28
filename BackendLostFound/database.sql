@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS `laporan_kehilangan` (
     `deskripsi`     TEXT,
     `lokasi`        VARCHAR(200)    NOT NULL,
     `waktu_hilang`  DATETIME        NOT NULL,
+    `foto_path`     VARCHAR(255)    DEFAULT NULL,
     `status`        ENUM('menunggu','dicocokkan','selesai','ditutup') NOT NULL DEFAULT 'menunggu',
     `created_at`    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
