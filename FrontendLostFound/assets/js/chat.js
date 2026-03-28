@@ -83,6 +83,7 @@
         const officerCreateWrap = document.getElementById('chatOfficerCreateWrap');
         const laporanSelect = document.getElementById('chatLaporanSelect');
         const createRoomBtn = document.getElementById('chatCreateRoomBtn');
+        const endRoomBtn = document.getElementById('chatEndRoomBtn');
 
         if (!chatWidget || !toggleBtn || !minimizeBtn || !chatInput || !chatSendBtn || !chatMessages || !chatStatus) {
             return;
@@ -257,6 +258,7 @@
             if (!isConnected || !firebaseDb || !roomId) {
                 setInputEnabled(false);
                 currentRoomId = '';
+                if (endRoomBtn) endRoomBtn.classList.add('hidden');
                 return;
             }
 
@@ -264,6 +266,7 @@
             if (!selected) {
                 setStatus('Room tidak ditemukan. Silakan refresh daftar room.');
                 setInputEnabled(false);
+                if (endRoomBtn) endRoomBtn.classList.add('hidden');
                 return;
             }
 
@@ -275,8 +278,17 @@
 
             const selectedIndex = rooms.findIndex((item) => item.firebase_room_id === roomId);
             const prettyLabel = selectedIndex >= 0 ? getRoomLabel(selected, selectedIndex) : 'percakapan terpilih';
-            setStatus('Terhubung ke ' + prettyLabel + '.');
             setInputEnabled(selected.status === 'aktif');
+
+            // Show/hide end room button based on officer role and room status
+            if (isOfficer && endRoomBtn) {
+                if (selected.status === 'aktif') {
+                    endRoomBtn.classList.remove('hidden');
+                    endRoomBtn.disabled = false;
+                } else {
+                    endRoomBtn.classList.add('hidden');
+                }
+            }
 
             unsubscribeMessages = sdk.onValue(currentRoomRef, (snapshot) => {
                 renderMessages(snapshot.val());
@@ -288,7 +300,6 @@
         async function loadRooms(preferredRoomId) {
             if (!isConnected) return;
 
-            setStatus('Memuat daftar room...');
             try {
                 const response = await FinderApp.apiFetch('/api/chat-rooms');
                 rooms = Array.isArray(response?.data) ? response.data : [];
@@ -425,6 +436,17 @@
             updateBadge(0);
         }
 
+        async function connectChatOnly() {
+            const user = FinderApp.getStoredUser();
+            const token = FinderApp.getStoredToken();
+
+            if (!user || !token) {
+                return;
+            }
+
+            await connectRealtime();
+        }
+
         async function sendMessage() {
             const text = chatInput.value.trim();
             if (!text || !currentRoomRef || !isConnected) return;
@@ -528,5 +550,10 @@
         updateBadge(0);
         setInputEnabled(false);
         clearMessages('Klik ikon chat untuk mulai. Jika belum login, Anda akan diarahkan ke halaman login.');
+
+        // Auto-connect chat saat page load (tanpa membuka modal)
+        setTimeout(() => {
+            void connectChatOnly();
+        }, 500);
     });
 })();

@@ -26,7 +26,12 @@
         </div>
 
         <div class="chat-top-tools">
-            <div id="chatStatus" class="chat-status">Klik chat untuk mulai.</div>
+            <div class="chat-status-row">
+                <div id="chatStatus" class="chat-status">Klik chat untuk mulai.</div>
+                <?php if ($isOfficer): ?>
+                    <button id="chatEndRoomBtn" class="chat-tool-btn chat-end-room-btn hidden" type="button" title="Akhiri percakapan dengan pelapor">🔒 Akhiri</button>
+                <?php endif; ?>
+            </div>
 
             <div id="chatRoomControls" class="chat-room-controls hidden">
                 <select id="chatRoomSelect" class="chat-select" aria-label="Pilih room chat"></select>
@@ -179,7 +184,14 @@
     flex-direction: column;
     gap: 8px;
 }
+.chat-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
 .chat-status {
+    flex: 1;
     font-size: 12px;
     line-height: 1.4;
     color: var(--text-soft, #66646d);
@@ -215,6 +227,14 @@
 .chat-tool-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+.chat-end-room-btn {
+    border-color: rgba(211, 47, 47, 0.5);
+    background: rgba(211, 47, 47, 0.15);
+    color: #d32f2f;
+}
+.chat-end-room-btn:hover:not(:disabled) {
+    background: rgba(211, 47, 47, 0.25);
 }
 
 /* Chat Messages */
