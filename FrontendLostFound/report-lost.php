@@ -59,7 +59,7 @@ require_once __DIR__ . '/partials/navbar.php';
                             </div>
                             <div class="form-group">
                                 <label for="lostLocation">Lokasi Kehilangan <span class="required">*</span></label>
-                                <input type="text" id="lostLocation" name="lokasi" placeholder="Pilih stasiun dan peron..." required>
+                                <input type="text" id="lostLocation" name="lokasi" placeholder="Pilih stasiun..." required>
                             </div>
                         </div>
 
