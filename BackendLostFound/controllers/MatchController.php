@@ -42,8 +42,13 @@ class MatchController
     // ── GET /api/matches ─────────────────────────────────────────────────────
     public function index(): void
     {
+        $authUser = $GLOBALS['auth_user'] ?? null;
+        $role = $authUser['role'] ?? '';
+        $userId = (int) ($authUser['user_id'] ?? 0);
+
         $filters = [
             'status' => isset($_GET['status']) ? trim($_GET['status']) : '',
+            'exclude_scheduled' => isset($_GET['exclude_scheduled']) ? trim($_GET['exclude_scheduled']) : '',
         ];
 
         // Validasi nilai status jika diberikan
@@ -53,6 +58,10 @@ class MatchController
                 'Nilai status tidak valid. Pilihan: pending, diverifikasi, selesai, dibatalkan.',
                 422
             );
+        }
+
+        if ($role === ROLE_PELAPOR) {
+            $filters['pelapor_id'] = $userId;
         }
 
         $matches = $this->matchModel->getAll($filters);

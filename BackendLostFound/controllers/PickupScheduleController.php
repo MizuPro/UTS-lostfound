@@ -102,8 +102,8 @@ class PickupScheduleController
         $role = $authUser['role'] ?? '';
         $userId = (int) ($authUser['user_id'] ?? 0);
 
-        if ($role !== ROLE_PELAPOR) {
-            ResponseHelper::forbidden('Hanya pelapor yang dapat mengajukan jadwal pengambilan.');
+        if ($role !== ROLE_PELAPOR && $role !== ROLE_PETUGAS) {
+            ResponseHelper::forbidden('Hanya pelapor atau petugas yang dapat membuat jadwal pengambilan.');
         }
 
         $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
@@ -126,7 +126,7 @@ class PickupScheduleController
             ResponseHelper::notFound('Data pencocokan tidak ditemukan.');
         }
 
-        if ((int) $match['pelapor_id'] !== $userId) {
+        if ($role === ROLE_PELAPOR && (int) $match['pelapor_id'] !== $userId) {
             ResponseHelper::forbidden('Anda hanya dapat membuat jadwal untuk pencocokan milik Anda sendiri.');
         }
 
@@ -139,19 +139,24 @@ class PickupScheduleController
             ResponseHelper::error('Pencocokan ini sudah memiliki jadwal aktif.', 409);
         }
 
+        $status = ($role === ROLE_PETUGAS) ? 'disetujui' : 'menunggu_persetujuan';
+        $petugasId = ($role === ROLE_PETUGAS) ? $userId : null;
+
         $id = $this->scheduleModel->create([
             'match_id' => $matchId,
-            'pelapor_id' => $userId,
+            'pelapor_id' => $match['pelapor_id'],
+            'petugas_id' => $petugasId,
             'waktu_jadwal' => $input['waktu_jadwal'],
             'lokasi_pengambilan' => $input['lokasi_pengambilan'],
             'catatan' => $input['catatan'] ?? null,
-            'status' => 'menunggu_persetujuan',
+            'status' => $status,
         ]);
 
         $created = $this->scheduleModel->findById($id);
+        $msg = ($role === ROLE_PETUGAS) ? 'Jadwal pengambilan berhasil dibuat.' : 'Pengajuan jadwal pengambilan berhasil dibuat.';
         ResponseHelper::success(
             ['pickup_schedule' => $created],
-            'Pengajuan jadwal pengambilan berhasil dibuat.',
+            $msg,
             201
         );
     }

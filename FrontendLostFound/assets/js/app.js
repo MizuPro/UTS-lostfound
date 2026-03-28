@@ -173,6 +173,12 @@
         return `<span class="badge ${statusBadgeClass(status)}">${label}</span>`;
     }
 
+    function formatStatus(status) {
+        if (!status) return '-';
+        const formatted = status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        return formatted;
+    }
+
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text ?? '';
@@ -400,6 +406,7 @@
         combineDateTime,
         statusBadge,
         statusBadgeClass,
+        formatStatus,
         escapeHtml,
         openModal,
         closeModal,

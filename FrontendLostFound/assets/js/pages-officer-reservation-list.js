@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadSchedules() {
         try {
             const response = await FinderApp.apiFetch('/api/pickup-schedules');
-            const schedules = response?.data?.schedules || [];
+            const schedules = response?.data?.pickup_schedules || [];
 
             if (schedules.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center soft">Belum ada jadwal pengambilan.</td></tr>';

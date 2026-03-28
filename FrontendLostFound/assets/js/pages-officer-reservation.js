@@ -22,77 +22,127 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadSchedules() {
         try {
-            const response = await FinderApp.apiFetch('/api/pickup-schedules');
-            currentSchedules = response?.data?.schedules || [];
+            // 1. Load existing schedules
+            const schedResp = await FinderApp.apiFetch('/api/pickup-schedules');
+            currentSchedules = schedResp?.data?.pickup_schedules || [];
 
-            // Only show active or waiting schedules for review
+            // 2. Load verified matches that don't have a schedule yet
+            const matchResp = await FinderApp.apiFetch('/api/matches?status=diverifikasi&exclude_scheduled=1');
+            const availableMatches = matchResp?.data?.matches || [];
+
+            matchSelect.innerHTML = '<option value="">-- Pilih Pencocokan / Jadwal --</option>';
+
+            // Render existing active schedules
             const pendingOrApproved = currentSchedules.filter(s =>
                 s.status === 'menunggu_persetujuan' || s.status === 'disetujui'
             );
 
-            if (pendingOrApproved.length === 0) {
-                matchSelect.innerHTML = '<option value="">-- Tidak ada pengajuan jadwal aktif --</option>';
-            } else {
-                matchSelect.innerHTML = '<option value="">-- Pilih Jadwal Pengambilan --</option>';
+            if (pendingOrApproved.length > 0) {
+                const group = document.createElement('optgroup');
+                group.label = 'Jadwal Aktif / Menunggu';
                 pendingOrApproved.forEach(s => {
                     const opt = document.createElement('option');
-                    opt.value = s.id;
-                    opt.textContent = `[${s.status.toUpperCase()}] Match #${s.match_id} - ${s.pelapor_name} - ${FinderApp.formatDateTime(s.waktu_jadwal)}`;
-                    matchSelect.appendChild(opt);
+                    opt.value = `schedule:${s.id}`;
+                    opt.textContent = `[${s.status.toUpperCase()}] Match #${s.match_id} - ${s.pelapor_name}`;
+                    group.appendChild(opt);
                 });
+                matchSelect.appendChild(group);
+            }
+
+            // Render matches waiting for schedule
+            if (availableMatches.length > 0) {
+                const group = document.createElement('optgroup');
+                group.label = 'Pencocokan Siap Dijadwalkan (Baru)';
+                availableMatches.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = `match:${m.id}`;
+                    opt.textContent = `[SIAP] Match #${m.id} - ${m.pelapor_name} - ${m.laporan_nama}`;
+                    group.appendChild(opt);
+                });
+                matchSelect.appendChild(group);
+            }
+
+            if (pendingOrApproved.length === 0 && availableMatches.length === 0) {
+                matchSelect.innerHTML = '<option value="">-- Tidak ada data untuk dijadwalkan --</option>';
             }
         } catch (error) {
-            FinderApp.showToast('Gagal memuat daftar jadwal.', 'error');
+            FinderApp.showToast('Gagal memuat daftar data.', 'error');
             matchSelect.innerHTML = '<option value="">-- Gagal memuat data --</option>';
         }
     }
 
     matchSelect.addEventListener('change', async (e) => {
-        const id = e.target.value;
-        if (!id) {
+        const val = e.target.value;
+        if (!val) {
             scheduleDetailCard.style.display = 'none';
             return;
         }
 
+        const [type, id] = val.split(':');
+
         try {
-            const response = await FinderApp.apiFetch(`/api/pickup-schedules/${id}`);
-            const s = response?.data?.schedule;
-            if (!s) return;
+            if (type === 'schedule') {
+                const response = await FinderApp.apiFetch(`/api/pickup-schedules/${id}`);
+                const s = response?.data?.pickup_schedule;
+                if (!s) return;
 
-            scheduleIdInput.value = s.id;
-            pelaporName.value = s.pelapor_name || '-';
-            pelaporEmail.value = s.pelapor_email || '-';
+                scheduleIdInput.value = s.id;
+                form.dataset.matchId = s.match_id;
+                form.dataset.type = 'schedule';
 
-            // We need match detail for item name
-            const matchResp = await FinderApp.apiFetch(`/api/matches/${s.match_id}`);
-            const match = matchResp?.data?.match;
-            if (match) {
-                laporanBarang.value = match.laporan_nama_barang || '-';
+                pelaporName.value = s.pelapor_name || '-';
+                pelaporEmail.value = s.pelapor_email || '-';
+                laporanBarang.value = s.laporan_nama || '-';
+
+                const dt = s.waktu_jadwal ? s.waktu_jadwal.split(' ') : ['', ''];
+                scheduleDate.value = dt[0];
+                scheduleTime.value = dt[1] ? dt[1].substring(0, 5) : '';
+
+                scheduleLocation.value = s.lokasi_pengambilan || '';
+                scheduleNote.value = s.catatan || '';
+
+                statusBadge.className = `status-badge is-${s.status}`;
+                statusBadge.textContent = FinderApp.formatStatus(s.status);
+
+                renderActionButtons(s.status);
             } else {
-                laporanBarang.value = '-';
+                // New schedule from match
+                const response = await FinderApp.apiFetch(`/api/matches/${id}`);
+                const m = response?.data?.match;
+                if (!m) return;
+
+                scheduleIdInput.value = '';
+                form.dataset.matchId = m.id;
+                form.dataset.type = 'new';
+
+                pelaporName.value = m.pelapor_name || '-';
+                pelaporEmail.value = m.pelapor_email || '-';
+                laporanBarang.value = m.laporan_nama || '-';
+
+                scheduleDate.value = '';
+                scheduleTime.value = '';
+                scheduleLocation.value = 'Kantor Petugas (Default)';
+                scheduleNote.value = '';
+
+                statusBadge.className = 'status-badge is-pending';
+                statusBadge.textContent = 'Belum Dijadwalkan';
+
+                renderActionButtons('new');
             }
-
-            const dt = s.waktu_jadwal ? s.waktu_jadwal.split(' ') : ['',''];
-            scheduleDate.value = dt[0];
-            scheduleTime.value = dt[1] ? dt[1].substring(0, 5) : '';
-
-            scheduleLocation.value = s.lokasi_pengambilan || '';
-            scheduleNote.value = s.catatan || '';
-
-            statusBadge.className = `status-badge is-${s.status}`;
-            statusBadge.textContent = FinderApp.formatStatus(s.status);
-
-            renderActionButtons(s.status);
 
             scheduleDetailCard.style.display = 'block';
         } catch (error) {
-            FinderApp.showToast('Gagal memuat detail jadwal.', 'error');
+            FinderApp.showToast('Gagal memuat detail.', 'error');
         }
     });
 
     function renderActionButtons(status) {
         actionButtons.innerHTML = '';
-        if (status === 'menunggu_persetujuan') {
+        if (status === 'new') {
+            actionButtons.innerHTML = `
+                <button type="button" class="btn btn-primary" onclick="window.createSchedule()">Buat & Setujui Jadwal</button>
+            `;
+        } else if (status === 'menunggu_persetujuan') {
             actionButtons.innerHTML = `
                 <button type="button" class="btn btn-primary" onclick="window.reviewSchedule('disetujui')">Setujui Jadwal</button>
                 <button type="button" class="btn btn-danger" onclick="window.reviewSchedule('ditolak')">Tolak</button>
@@ -104,6 +154,32 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
     }
+
+    window.createSchedule = async () => {
+        const matchId = form.dataset.matchId;
+        const date = scheduleDate.value;
+        const time = scheduleTime.value;
+        const loc = scheduleLocation.value.trim();
+        const note = scheduleNote.value.trim();
+
+        const dt = FinderApp.combineDateTime(date, time);
+        if (!dt || !loc) {
+            FinderApp.showToast('Tanggal, waktu, dan lokasi wajib diisi.', 'error');
+            return;
+        }
+
+        try {
+            await FinderApp.apiFetch('/api/pickup-schedules', {
+                method: 'POST',
+                body: { match_id: matchId, waktu_jadwal: dt, lokasi_pengambilan: loc, catatan: note }
+            });
+            FinderApp.showToast('Jadwal berhasil dibuat dan disetujui.', 'success');
+            loadSchedules();
+            scheduleDetailCard.style.display = 'none';
+        } catch (err) {
+            FinderApp.showToast(FinderApp.getApiErrorMessage(err, 'Gagal membuat jadwal.'), 'error');
+        }
+    };
 
     window.reviewSchedule = async (action) => {
         const id = scheduleIdInput.value;

@@ -42,6 +42,18 @@ class MatchModel
             $params[] = $filters['status'];
         }
 
+        if (!empty($filters['pelapor_id'])) {
+            $sql     .= ' AND lk.pelapor_id = ?';
+            $params[] = $filters['pelapor_id'];
+        }
+
+        if (!empty($filters['exclude_scheduled'])) {
+            $sql .= ' AND p.id NOT IN (
+                SELECT match_id FROM jadwal_pengambilan 
+                WHERE status IN (\'menunggu_persetujuan\', \'disetujui\')
+            )';
+        }
+
         $sql .= ' ORDER BY p.created_at DESC';
 
         $stmt = $this->db->prepare($sql);

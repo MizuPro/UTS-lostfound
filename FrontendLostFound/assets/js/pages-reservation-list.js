@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 verifiedMatches.forEach(m => {
                     const opt = document.createElement('option');
                     opt.value = m.id;
-                    opt.textContent = `Match #${m.id} - ${m.laporan_nama_barang}`;
+                    opt.textContent = `Match #${m.id} - ${m.laporan_nama}`;
                     matchSelect.appendChild(opt);
                 });
             }
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadScheduleList() {
         try {
             const response = await FinderApp.apiFetch('/api/pickup-schedules');
-            const schedules = response?.data?.schedules || [];
+            const schedules = response?.data?.pickup_schedules || [];
 
             if (schedules.length === 0) {
                 scheduleListContainer.innerHTML = '<div class="empty-state soft">Belum ada jadwal pengambilan.</div>';

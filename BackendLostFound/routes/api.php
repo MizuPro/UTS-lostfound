@@ -45,7 +45,7 @@ return [
     'DELETE /api/lost-reports/{id}'   => ['LostReportController', 'delete',  ['auth', 'role:petugas']],
 
     // ── PENCOCOKAN & KLAIM (Matching & Claims) ───────────────────────────────
-    'GET /api/matches'                => ['MatchController', 'index',         ['auth', 'role:petugas']],
+    'GET /api/matches'                => ['MatchController', 'index',         ['auth', 'role:petugas,pelapor']],
     'GET /api/matches/{id}'           => ['MatchController', 'show',          ['auth', 'role:petugas,pelapor']],
     'POST /api/matches'               => ['MatchController', 'matchItem',     ['auth', 'role:petugas']],
     'PUT /api/matches/{id}/verify'    => ['MatchController', 'verifyClaim',   ['auth', 'role:petugas']],
