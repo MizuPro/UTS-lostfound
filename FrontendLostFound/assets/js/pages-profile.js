@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reportListState.classList.add('hidden');
         reportCards.innerHTML = reports.map((report) => `
             <article class="report-status-card">
+                <div class="image-media" style="margin-bottom: 16px; border-radius: 14px; overflow: hidden; max-height: 180px;">${FinderApp.fileToPreviewHtml(report.foto_path, report.nama_barang)}</div>
                 <div class="report-status-top">
                     <div class="report-status-main">
                         <h3>${FinderApp.escapeHtml(report.nama_barang)}</h3>
@@ -173,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!report) return;
             const detailContent = document.getElementById('reportDetailContent');
             detailContent.innerHTML = `
+                <div class="detail-box image-box">${FinderApp.fileToPreviewHtml(report.foto_path, report.nama_barang)}</div>
                 <div class="detail-box"><span>Nama Barang</span><strong>${FinderApp.escapeHtml(report.nama_barang)}</strong></div>
                 <div class="detail-box"><span>Status</span><strong>${FinderApp.escapeHtml(report.status)}</strong></div>
                 <div class="detail-box"><span>Lokasi</span><strong>${FinderApp.escapeHtml(report.lokasi)}</strong></div>

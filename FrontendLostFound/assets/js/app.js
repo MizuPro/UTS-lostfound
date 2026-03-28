@@ -425,7 +425,35 @@
 
     function fileToPreviewHtml(url, alt = 'Preview') {
         if (!url) return '<div class="image-placeholder">Tidak ada foto</div>';
-        return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" class="cover-image">`;
+        let imageUrl = url;
+        if (!imageUrl.startsWith('http')) {
+            imageUrl = window.APP_CONFIG.API_BASE_URL + '/storage/' + imageUrl.replace(/^\/?(storage\/)?/, '');
+        }
+        return `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(alt)}" class="cover-image" style="cursor: pointer;" onclick="FinderApp.showImageLightbox(this.src, this.alt)">`;
+    }
+
+    function showImageLightbox(src, alt) {
+        let lightbox = document.getElementById('finderImageLightbox');
+        if (!lightbox) {
+            lightbox = document.createElement('div');
+            lightbox.id = 'finderImageLightbox';
+            lightbox.className = 'finder-modal';
+            lightbox.hidden = true;
+            lightbox.innerHTML = `
+                <div class="finder-modal-backdrop" data-close-modal style="background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);"></div>
+                <button class="finder-modal-close" type="button" data-close-modal style="color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 2;">&times;</button>
+                <div class="lightbox-content" style="position: absolute; inset: 40px; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 1;">
+                    <img id="finderLightboxImg" src="" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: auto; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                </div>
+            `;
+            document.body.appendChild(lightbox);
+        }
+
+        const img = document.getElementById('finderLightboxImg');
+        img.src = src;
+        img.alt = alt || 'Preview';
+
+        openModal(lightbox);
     }
 
     window.FinderApp = {
@@ -453,6 +481,7 @@
         getHomePathByRole,
         getProfilePathByRole,
         fileToPreviewHtml,
+        showImageLightbox,
     };
 
     document.addEventListener('DOMContentLoaded', () => {

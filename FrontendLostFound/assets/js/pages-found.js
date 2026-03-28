@@ -16,9 +16,19 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.innerHTML = '';
 
         try {
-            const query = params.toString() ? `?${params.toString()}` : '';
+            const apiParams = new URLSearchParams(params);
+            const uiStatus = apiParams.get('status') || '';
+            if (uiStatus === 'semua') {
+                apiParams.delete('status');
+            }
+
+            const query = apiParams.toString() ? `?${apiParams.toString()}` : '';
             const response = await FinderApp.apiFetch('/api/found-items' + query);
-            const items = response?.data?.found_items || [];
+            let items = response?.data?.found_items || [];
+
+            if (uiStatus === '') {
+                items = items.filter(item => item.status !== 'selesai');
+            }
 
             if (!items.length) {
                 state.classList.remove('hidden');
