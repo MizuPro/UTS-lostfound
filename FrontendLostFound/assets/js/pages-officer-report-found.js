@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const payload = new FormData();
         payload.append('nama_barang', document.getElementById('foundItemName').value.trim());
         payload.append('lokasi', document.getElementById('foundLocation').value.trim());
-        payload.append('waktu_temuan', waktuTemuan);
+        payload.append('waktu_ditemukan', waktuTemuan);
         payload.append('deskripsi', document.getElementById('foundDescription').value.trim());
 
         const photo = document.getElementById('foundPhoto').files[0];
@@ -59,9 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 body: payload,
             });
+            alert('Sukses: Barang temuan berhasil ditambahkan.');
             FinderApp.showToast('Barang temuan berhasil ditambahkan.', 'success');
             form.reset();
         } catch (error) {
+            alert('Gagal: ' + FinderApp.getApiErrorMessage(error, 'Gagal menambahkan barang temuan.'));
             FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Gagal menambahkan barang temuan.'), 'error');
         } finally {
             submitBtn.disabled = false;
