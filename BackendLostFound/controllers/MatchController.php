@@ -7,6 +7,7 @@ require_once __DIR__ . '/../helpers/ValidationHelper.php';
 require_once __DIR__ . '/../models/MatchModel.php';
 require_once __DIR__ . '/../models/FoundItemModel.php';
 require_once __DIR__ . '/../models/LostReportModel.php';
+require_once __DIR__ . '/../models/PickupScheduleModel.php';
 
 /**
  * MatchController
@@ -27,12 +28,15 @@ class MatchController
     private $foundItemModel;
     /** @var LostReportModel */
     private $lostReportModel;
+    /** @var PickupScheduleModel */
+    private $scheduleModel;
 
     public function __construct()
     {
         $this->matchModel = new MatchModel();
         $this->foundItemModel = new FoundItemModel();
         $this->lostReportModel = new LostReportModel();
+        $this->scheduleModel = new PickupScheduleModel();
     }
 
     // ── GET /api/matches ─────────────────────────────────────────────────────
@@ -191,10 +195,59 @@ class MatchController
     // ── PUT /api/matches/{id}/handover ───────────────────────────────────────
     public function recordHandover(): void
     {
-        ResponseHelper::error(
-            'Endpoint ini sudah tidak digunakan. Gunakan PUT /api/pickup-schedules/{id}/complete.',
-            410
-        );
+        $id = (int) ($GLOBALS['route_params']['id'] ?? 0);
+        $match = $this->matchModel->findById($id);
+
+        if (!$match) {
+            ResponseHelper::notFound('Data pencocokan tidak ditemukan.');
+        }
+
+        // Pastikan statusnya diverifikasi sebelum bisa diselesaikan
+        if ($match['status'] !== 'diverifikasi') {
+            ResponseHelper::error('Hanya pencocokan berstatus diverifikasi yang dapat diselesaikan handovers-nya.', 409);
+        }
+
+        $authUser = $GLOBALS['auth_user'] ?? null;
+        $petugasId = (int) ($authUser['user_id'] ?? 0);
+
+        $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
+        $catatan = isset($input['catatan']) ? trim($input['catatan']) : 'Handover diselesaikan oleh petugas';
+        $waktuSerah = date('Y-m-d H:i:s');
+
+        try {
+            $db = Database::getInstance();
+            $db->beginTransaction();
+
+            // 1. Update status pencocokan -> selesai
+            $this->matchModel->updateStatus($id, 'selesai', $catatan, $waktuSerah);
+
+            // 2. Update status barang temuan -> selesai (archived)
+            $this->foundItemModel->archive($match['barang_temuan_id'], $catatan);
+
+            // 3. Update status laporan kehilangan -> selesai
+            $laporan = $this->lostReportModel->findById((int) $match['laporan_id']);
+            if ($laporan) {
+                $this->lostReportModel->update((int) $match['laporan_id'], array_merge($laporan, ['status' => 'selesai']));
+            }
+
+            // 4. Jika ada jadwal aktif untuk match ini, selesaikan juga
+            $activeSchedule = $this->scheduleModel->findActiveByMatchId($id);
+            if ($activeSchedule) {
+                $this->scheduleModel->updateStatus((int) $activeSchedule['id'], 'selesai', $petugasId, $catatan, $waktuSerah);
+            }
+
+            $db->commit();
+
+            $updatedMatch = $this->matchModel->findById($id);
+            ResponseHelper::success(
+                ['match' => $updatedMatch],
+                'Handover berhasil dicatat. Status barang, laporan, dan jadwal (jika ada) telah diperbarui menjadi selesai.'
+            );
+
+        } catch (\Exception $e) {
+            $db->rollBack();
+            ResponseHelper::error('Terjadi kesalahan saat mencatat handover: ' . $e->getMessage(), 500);
+        }
     }
 
     // ── PUT /api/matches/{id}/cancel ─────────────────────────────────────────

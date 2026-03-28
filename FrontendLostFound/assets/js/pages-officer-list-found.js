@@ -137,7 +137,15 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('waktu_temuan', waktu);
         formData.append('status', document.getElementById('officerEditFoundStatus').value);
         const file = document.getElementById('officerEditFoundPhoto').files[0];
-        if (file) formData.append('foto', file);
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                FinderApp.showToast('Ukuran foto terlalu besar. Maksimal 5MB.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Simpan Perubahan';
+                return;
+            }
+            formData.append('foto', file);
+        }
 
         btn.disabled = true;
         btn.textContent = 'Menyimpan...';

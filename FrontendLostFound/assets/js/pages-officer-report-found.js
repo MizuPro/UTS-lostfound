@@ -44,7 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
         payload.append('deskripsi', document.getElementById('foundDescription').value.trim());
 
         const photo = document.getElementById('foundPhoto').files[0];
-        if (photo) payload.append('foto', photo);
+        if (photo) {
+            if (photo.size > 5 * 1024 * 1024) {
+                FinderApp.showToast('Ukuran foto terlalu besar. Maksimal 5MB.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit';
+                return;
+            }
+            payload.append('foto', photo);
+        }
 
         try {
             await FinderApp.apiFetch('/api/found-items', {

@@ -3,7 +3,7 @@
 // ── Aplikasi ─────────────────────────────────────────────────────────────────
 define('APP_NAME',    'CommuterLink Nusantara Lost & Found');
 define('APP_VERSION', '1.0.0');
-define('BASE_URL',    'http://localhost/backend-Lost-Found');
+define('BASE_URL',    'http://localhost/lostfound/BackendLostFound');
 
 // ── Database ──────────────────────────────────────────────────────────────────
 define('DB_HOST',     '127.0.0.1');
