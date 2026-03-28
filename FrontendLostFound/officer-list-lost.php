@@ -32,7 +32,7 @@ require_once __DIR__ . '/partials/navbar-officer.php';
                     </div>
                     <div class="form-group">
                         <label for="officerLostLocationFilter">Lokasi</label>
-                        <input type="text" id="officerLostLocationFilter" placeholder="Pilih stasiun dan peron...">
+                        <input type="text" id="officerLostLocationFilter" placeholder="Pilih stasiun...">
                     </div>
                     <div class="toolbar-actions">
                         <button type="submit" class="btn btn-primary">Cari</button>
@@ -78,7 +78,7 @@ require_once __DIR__ . '/partials/navbar-officer.php';
             </div>
             <div class="form-group">
                 <label for="officerEditLostLocation">Lokasi</label>
-                <input type="text" id="officerEditLostLocation" placeholder="Pilih stasiun dan peron..." required>
+                <input type="text" id="officerEditLostLocation" placeholder="Pilih stasiun..." required>
             </div>
             <div class="form-group">
                 <label for="officerEditLostDescription">Deskripsi</label>

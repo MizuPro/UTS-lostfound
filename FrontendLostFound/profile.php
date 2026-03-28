@@ -137,7 +137,7 @@ require_once __DIR__ . '/partials/navbar.php';
             </div>
             <div class="form-group">
                 <label for="editReportLocation">Lokasi</label>
-                <input type="text" id="editReportLocation" name="lokasi" placeholder="Pilih stasiun dan peron..." required>
+                <input type="text" id="editReportLocation" name="lokasi" placeholder="Pilih stasiun..." required>
             </div>
             <div class="form-group">
                 <label for="editReportDescription">Deskripsi</label>

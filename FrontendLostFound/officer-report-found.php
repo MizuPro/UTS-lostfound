@@ -46,7 +46,7 @@ require_once __DIR__ . '/partials/navbar-officer.php';
                         </div>
                         <div class="form-group">
                             <label for="foundLocation">Lokasi Temuan <span class="required">*</span></label>
-                            <input type="text" id="foundLocation" placeholder="Pilih stasiun dan peron..." required>
+                            <input type="text" id="foundLocation" placeholder="Pilih stasiun..." required>
                         </div>
                         <div class="form-group">
                             <label for="foundDescription">Detail Barang</label>
