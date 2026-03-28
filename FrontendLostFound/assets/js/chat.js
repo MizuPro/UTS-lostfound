@@ -55,6 +55,8 @@
             ref: dbMod.ref,
             onValue: dbMod.onValue,
             push: dbMod.push,
+            set: dbMod.set,
+            get: dbMod.get,
         };
 
         return firebaseSdk;
@@ -106,12 +108,176 @@
         };
         let rooms = [];
         let unreadCount = 0;
+        const roomUnreadUnsubscribers = new Map();
+        const roomMessagesCache = Object.create(null);
+        const roomLastReadCache = Object.create(null);
+        const roomUnreadCache = Object.create(null);
+        const roomReadWriteCache = Object.create(null);
 
         function updateBadge(value) {
             unreadCount = Math.max(0, Number(value) || 0);
             if (chatBadge) {
                 chatBadge.textContent = String(unreadCount > 99 ? '99+' : unreadCount);
             }
+        }
+
+        function isWidgetMaximized() {
+            return chatWidget.classList.contains('maximized');
+        }
+
+        function isCurrentRoomVisible() {
+            return isWidgetMaximized() && document.visibilityState === 'visible';
+        }
+
+        function countUnreadForRoom(roomId) {
+            const rows = roomMessagesCache[roomId] ? Object.entries(roomMessagesCache[roomId]) : [];
+            const lastReadTs = Number(roomLastReadCache[roomId]) || 0;
+            const myUid = String(firebaseIdentity.uid || '');
+
+            return rows.reduce((total, [key, msg]) => {
+                const ts = Number(msg?.timestamp) || 0;
+                const senderId = String(msg?.sender_id || '');
+                if (ts > lastReadTs && senderId !== myUid) {
+                    return total + 1;
+                }
+                return total;
+            }, 0);
+        }
+
+        function refreshTotalUnread() {
+            const availableRoomIds = new Set(rooms.map((room) => String(room.firebase_room_id || '')));
+            const total = Object.entries(roomUnreadCache).reduce((sum, [roomId, count]) => {
+                if (!availableRoomIds.has(roomId)) return sum;
+                return sum + Math.max(0, Number(count) || 0);
+            }, 0);
+            updateBadge(total);
+        }
+
+        function refreshRoomUnread(roomId) {
+            if (!roomId) return;
+
+            if (roomId === currentRoomId && isCurrentRoomVisible()) {
+                roomUnreadCache[roomId] = 0;
+                refreshTotalUnread();
+                return;
+            }
+
+            roomUnreadCache[roomId] = countUnreadForRoom(roomId);
+            refreshTotalUnread();
+        }
+
+        function teardownUnreadSubscriptions() {
+            roomUnreadUnsubscribers.forEach((unsubscribe) => {
+                if (typeof unsubscribe === 'function') {
+                    unsubscribe();
+                }
+            });
+
+            roomUnreadUnsubscribers.clear();
+
+            Object.keys(roomMessagesCache).forEach((roomId) => {
+                delete roomMessagesCache[roomId];
+                delete roomLastReadCache[roomId];
+                delete roomUnreadCache[roomId];
+                delete roomReadWriteCache[roomId];
+            });
+        }
+
+        async function markRoomAsRead(roomId) {
+            if (!roomId || !firebaseDb || !isConnected || !firebaseIdentity.uid) return;
+
+            let maxTs = Date.now();
+            const msgs = roomMessagesCache[roomId];
+            if (msgs) {
+                Object.entries(msgs).forEach(([k, m]) => {
+                    const ts = Number(m.timestamp) || 0;
+                    if (ts > maxTs) maxTs = ts;
+                });
+            }
+
+            const now = Date.now();
+            const lastWrittenAt = Number(roomReadWriteCache[roomId]) || 0;
+            const lastReadTs = Number(roomLastReadCache[roomId]) || 0;
+
+            const updateTs = maxTs + 1;
+
+            if (now - lastWrittenAt < 1200 || updateTs <= lastReadTs) {
+                return;
+            }
+
+            roomReadWriteCache[roomId] = now;
+            roomLastReadCache[roomId] = updateTs;
+            roomUnreadCache[roomId] = 0;
+            refreshTotalUnread();
+
+            try {
+                const sdk = await ensureFirebaseApp();
+                const readRef = sdk.ref(firebaseDb, 'room_meta/' + roomId + '/participants/' + firebaseIdentity.uid + '/last_read_ts');
+                await sdk.set(readRef, updateTs);
+            } catch (_) {
+                roomReadWriteCache[roomId] = 0;
+            }
+        }
+
+        async function initLastReadTsFromFirebase(roomId) {
+            if (!roomId || !firebaseDb || !firebaseIdentity.uid) return;
+
+            try {
+                const sdk = await ensureFirebaseApp();
+                const readRef = sdk.ref(firebaseDb, 'room_meta/' + roomId + '/participants/' + firebaseIdentity.uid + '/last_read_ts');
+                const snapshot = await sdk.get(readRef);
+                const lastReadValue = Number(snapshot.val()) || 0;
+                roomLastReadCache[roomId] = lastReadValue;
+            } catch (err) {
+                roomLastReadCache[roomId] = 0;
+            }
+        }
+
+        async function subscribeUnreadForRooms() {
+            teardownUnreadSubscriptions();
+
+            if (!firebaseDb || !rooms.length) {
+                updateBadge(0);
+                return;
+            }
+
+            const sdk = await ensureFirebaseApp();
+
+            await Promise.all(rooms.map(room => initLastReadTsFromFirebase(String(room.firebase_room_id || ''))));
+
+            rooms.forEach((room) => {
+                const roomId = String(room.firebase_room_id || '');
+                if (!roomId) return;
+
+                roomMessagesCache[roomId] = null;
+                roomUnreadCache[roomId] = 0;
+
+                const chatRef = sdk.ref(firebaseDb, 'chats/' + roomId);
+                const readRef = sdk.ref(firebaseDb, 'room_meta/' + roomId + '/participants/' + firebaseIdentity.uid + '/last_read_ts');
+
+                const stopMessages = sdk.onValue(chatRef, (snapshot) => {
+                    roomMessagesCache[roomId] = snapshot.val();
+                    refreshRoomUnread(roomId);
+
+                    if (roomId === currentRoomId && isCurrentRoomVisible()) {
+                        void markRoomAsRead(roomId);
+                    }
+                });
+
+                // Listener untuk update realtime last_read_ts (ketika user lain di room yang sama membaca)
+                const stopRead = sdk.onValue(readRef, (snapshot) => {
+                    const newLastReadValue = Number(snapshot.val()) || 0;
+                    if (newLastReadValue > Number(roomLastReadCache[roomId] || 0)) {
+                        roomLastReadCache[roomId] = newLastReadValue;
+                        refreshRoomUnread(roomId);
+                    }
+                });
+
+                roomUnreadUnsubscribers.set(roomId, () => {
+                    if (typeof stopMessages === 'function') stopMessages();
+                    if (typeof stopRead === 'function') stopRead();
+                });
+            });
         }
 
         function setStatus(text) {
@@ -159,9 +325,10 @@
             chatMessages.appendChild(box);
         }
 
-        function appendMessage(msg, isMine) {
+        function appendMessage(msg, isMine, isUnread) {
             const wrapper = document.createElement('div');
-            wrapper.className = 'message ' + (isMine ? 'msg-sent' : 'msg-received');
+            const messageClass = 'message ' + (isMine ? 'msg-sent' : 'msg-received') + (isUnread && !isMine ? ' msg-unread' : ' msg-read');
+            wrapper.className = messageClass;
 
             const bubble = document.createElement('div');
             bubble.className = 'msg-bubble';
@@ -175,6 +342,14 @@
                 const username = msg.sender_username ? ' (' + msg.sender_username + ')' : '';
                 sender.textContent = name + username;
                 bubble.appendChild(sender);
+
+                if (isUnread) {
+                    const unreadBadge = document.createElement('div');
+                    unreadBadge.className = 'msg-unread-badge';
+                    unreadBadge.textContent = '●';
+                    unreadBadge.title = 'Belum dibaca';
+                    bubble.appendChild(unreadBadge);
+                }
             }
 
             const textNode = document.createElement('div');
@@ -194,10 +369,16 @@
             const rows = snapshotValue ? Object.entries(snapshotValue) : [];
             if (!rows.length) {
                 clearMessages('Belum ada pesan. Mulai percakapan sekarang.');
+                if (currentRoomId && isCurrentRoomVisible()) {
+                    void markRoomAsRead(currentRoomId);
+                }
                 return;
             }
 
             chatMessages.innerHTML = '';
+
+            const lastReadTs = Number(roomLastReadCache[currentRoomId]) || 0;
+            const myUid = String(firebaseIdentity.uid || '');
 
             rows
                 .map(([key, value]) => ({ key, ...value }))
@@ -208,11 +389,25 @@
                     return ta - tb;
                 })
                 .forEach((msg) => {
-                    const isMine = String(msg.sender_id) === String(firebaseIdentity.uid);
-                    appendMessage(msg, isMine);
+                    const isMine = String(msg.sender_id) === String(myUid);
+                    const msgTs = Number(msg.timestamp) || 0;
+                    const isUnread = !isMine && msgTs > lastReadTs;
+                    appendMessage(msg, isMine, isUnread);
+                    
+                    // Menonaktifkan input chat jika terdeteksi pesan sistem penutupan room
+                    if (msg.sender_id === 'system' && String(msg.text).includes('Room ditutup')) {
+                        setInputEnabled(false);
+                        const r = rooms.find(item => item.firebase_room_id === currentRoomId);
+                        if (r) r.status = 'selesai';
+                        if (endRoomBtn) endRoomBtn.classList.add('hidden');
+                    }
                 });
 
             chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            if (currentRoomId && isCurrentRoomVisible()) {
+                void markRoomAsRead(currentRoomId);
+            }
         }
 
         function teardownRoomSubscription() {
@@ -279,6 +474,7 @@
             const selectedIndex = rooms.findIndex((item) => item.firebase_room_id === roomId);
             const prettyLabel = selectedIndex >= 0 ? getRoomLabel(selected, selectedIndex) : 'percakapan terpilih';
             setInputEnabled(selected.status === 'aktif');
+            setStatus('Masuk ke room: ' + prettyLabel + '.');
 
             // Show/hide end room button based on officer role and room status
             if (isOfficer && endRoomBtn) {
@@ -295,6 +491,10 @@
             }, () => {
                 clearMessages('Gagal membaca pesan realtime. Coba refresh room.');
             });
+
+            if (isCurrentRoomVisible()) {
+                void markRoomAsRead(roomId);
+            }
         }
 
         async function loadRooms(preferredRoomId) {
@@ -303,6 +503,7 @@
             try {
                 const response = await FinderApp.apiFetch('/api/chat-rooms');
                 rooms = Array.isArray(response?.data) ? response.data : [];
+                await subscribeUnreadForRooms();
                 renderRoomOptions(preferredRoomId);
 
                 if (!rooms.length) {
@@ -433,7 +634,9 @@
                 chatInput.focus();
             }
 
-            updateBadge(0);
+            if (currentRoomId) {
+                await markRoomAsRead(currentRoomId);
+            }
         }
 
         async function connectChatOnly() {
@@ -537,14 +740,67 @@
             });
         }
 
+        if (endRoomBtn) {
+            endRoomBtn.addEventListener('click', async () => {
+                const room = rooms.find((item) => item.firebase_room_id === currentRoomId);
+                if (!room || !room.id) {
+                    FinderApp.showToast('Gagal memproses. Room tidak valid.', 'error');
+                    return;
+                }
+
+                if (!confirm('Apakah Anda yakin ingin mengakhiri percakapan ini?')) {
+                    return;
+                }
+
+                endRoomBtn.disabled = true;
+                const originalText = endRoomBtn.innerHTML;
+                endRoomBtn.innerHTML = 'Memproses...';
+
+                try {
+                    // Kirim log ke firebase sebelum status room diubah menjadi selesai oleh backend
+                    // untuk menghindari Firebase Rules permission_denied
+                    if (currentRoomRef && isConnected) {
+                        try {
+                            const sdk = await ensureFirebaseApp();
+                            await sdk.push(currentRoomRef, {
+                                sender_id: 'system',
+                                sender_name: 'Sistem',
+                                sender_username: 'Sistem',
+                                text: 'Percakapan ini telah diakhiri oleh petugas. Room ditutup.',
+                                timestamp: Date.now()
+                            });
+                        } catch (e) {
+                            console.error('Info: Gagal log penutupan ke firebase', e);
+                        }
+                    }
+
+                    await FinderApp.apiFetch('/api/chat-rooms/' + room.id + '/end', {
+                        method: 'PUT'
+                    });
+                    FinderApp.showToast('Percakapan telah diakhiri.', 'success');
+
+                    await loadRooms(currentRoomId);
+                } catch (error) {
+                    FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Gagal mengakhiri room.'), 'error');
+                } finally {
+                    endRoomBtn.disabled = false;
+                    endRoomBtn.innerHTML = originalText;
+                }
+            });
+        }
+
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && isConnected && chatWidget.classList.contains('maximized')) {
                 void loadRooms(currentRoomId);
+                if (currentRoomId) {
+                    void markRoomAsRead(currentRoomId);
+                }
             }
         });
 
         window.addEventListener('beforeunload', () => {
             teardownRoomSubscription();
+            teardownUnreadSubscriptions();
         });
 
         updateBadge(0);

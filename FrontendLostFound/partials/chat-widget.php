@@ -264,15 +264,34 @@
     font-size: 14px;
     line-height: 1.5;
     word-wrap: break-word;
+    transition: background-color 0.3s ease;
 }
-.msg-received .msg-bubble {
+.msg-received.msg-read .msg-bubble {
     background: #ffffff;
     border: 1px solid rgba(0,0,0,0.05);
+    border-bottom-left-radius: 4px;
+}
+.msg-received.msg-unread .msg-bubble {
+    background: #e8f5e9;
+    border: 1px solid rgba(76, 175, 80, 0.3);
     border-bottom-left-radius: 4px;
 }
 .msg-sent .msg-bubble {
     background: #dcf8c6;
     border-bottom-right-radius: 4px;
+}
+.msg-unread-badge {
+    display: inline-block;
+    color: #4caf50;
+    font-size: 18px;
+    line-height: 1;
+    margin-right: 6px;
+    margin-bottom: 2px;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
 }
 .msg-time {
     font-size: 11px;
