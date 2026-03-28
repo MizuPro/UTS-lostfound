@@ -122,23 +122,27 @@ class LostReportController
             $fotoPath = $this->handleUpload($_FILES['foto']);
         }
 
-        $id = $this->model->create([
-            'pelapor_id'   => $userId,
-            'nama_barang'  => $input['nama_barang'],
-            'deskripsi'    => $input['deskripsi'] ?? null,
-            'lokasi'       => $input['lokasi'],
-            'waktu_hilang' => $input['waktu_hilang'],
-            'foto_path'    => $fotoPath,
-            'status'       => 'menunggu',
-        ]);
+        try {
+            $id = $this->model->create([
+                'pelapor_id'   => $userId,
+                'nama_barang'  => $input['nama_barang'],
+                'deskripsi'    => $input['deskripsi'] ?? null,
+                'lokasi'       => $input['lokasi'],
+                'waktu_hilang' => $input['waktu_hilang'],
+                'foto_path'    => $fotoPath,
+                'status'       => 'menunggu',
+            ]);
 
-        $report = $this->model->findById($id);
+            $report = $this->model->findById($id);
 
-        ResponseHelper::success(
-            ['lost_report' => $report],
-            'Laporan kehilangan berhasil dibuat.',
-            201
-        );
+            ResponseHelper::success(
+                ['lost_report' => $report],
+                'Laporan kehilangan berhasil dibuat.',
+                201
+            );
+        } catch (\Exception $e) {
+            ResponseHelper::error('Gagal membuat laporan: ' . $e->getMessage(), 500);
+        }
     }
 
     // ── PUT /api/lost-reports/{id} ───────────────────────────────────────────
