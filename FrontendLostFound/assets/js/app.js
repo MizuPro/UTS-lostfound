@@ -115,6 +115,43 @@
         setTimeout(() => toast.remove(), timeout);
     }
 
+    function showAlert(title, message, type = 'info') {
+        let modal = document.getElementById('finderAlertModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'finderAlertModal';
+            modal.className = 'finder-modal';
+            modal.hidden = true;
+            modal.innerHTML = `
+                <div class="finder-modal-backdrop" data-close-modal></div>
+                <div class="finder-modal-dialog" style="max-width: 380px; text-align: center; padding: 40px 24px;">
+                    <div id="finderAlertIcon" style="font-size: 4rem; margin-bottom: 16px; line-height: 1;"></div>
+                    <h3 id="finderAlertTitle" style="margin-bottom: 10px; font-size: 22px;"></h3>
+                    <p id="finderAlertMessage" style="margin-bottom: 28px; color: rgba(19,19,22,0.72); line-height: 1.6; font-size: 15px; padding: 0 10px;"></p>
+                    <button type="button" class="btn btn-primary btn-block" data-close-modal id="finderAlertBtn">Oke, Mengerti</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        const iconEl = document.getElementById('finderAlertIcon');
+        const titleEl = document.getElementById('finderAlertTitle');
+        const msgEl = document.getElementById('finderAlertMessage');
+
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+
+        if (type === 'success') {
+            iconEl.innerHTML = '<i class="bi bi-check-circle-fill" style="color: #1b7a44;"></i>';
+        } else if (type === 'error') {
+            iconEl.innerHTML = '<i class="bi bi-x-circle-fill" style="color: #a22626;"></i>';
+        } else {
+            iconEl.innerHTML = '<i class="bi bi-info-circle-fill" style="color: #244cff;"></i>';
+        }
+
+        openModal(modal);
+    }
+
     function consumeFlashMessage() {
         const message = sessionStorage.getItem('finder_flash_message');
         if (message) {
@@ -399,6 +436,7 @@
         clearAuth,
         apiFetch,
         showToast,
+        showAlert,
         consumeFlashMessage,
         getApiErrorMessage,
         formatDateTime,
