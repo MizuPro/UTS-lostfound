@@ -17,11 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const scheduleNote = document.getElementById('scheduleNote');
     const statusBadge = document.getElementById('scheduleStatusBadge');
     const actionButtons = document.getElementById('actionButtons');
+    const loadingIndicator = document.getElementById('loadingIndicator');
 
     let currentSchedules = [];
 
     async function loadSchedules() {
         try {
+            matchSelect.disabled = true;
+
             // 1. Load existing schedules
             const schedResp = await FinderApp.apiFetch('/api/pickup-schedules');
             currentSchedules = schedResp?.data?.pickup_schedules || [];
@@ -43,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 pendingOrApproved.forEach(s => {
                     const opt = document.createElement('option');
                     opt.value = `schedule:${s.id}`;
-                    opt.textContent = `[${s.status.toUpperCase()}] Match #${s.match_id} - ${s.pelapor_name}`;
+                    let dateLabel = s.waktu_jadwal ? ` - ${FinderApp.formatDateTime(s.waktu_jadwal)}` : '';
+                    opt.textContent = `[${s.status.toUpperCase()}] Match #${s.match_id} - ${s.pelapor_name}${dateLabel}`;
                     group.appendChild(opt);
                 });
                 matchSelect.appendChild(group);
@@ -68,6 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             FinderApp.showToast('Gagal memuat daftar data.', 'error');
             matchSelect.innerHTML = '<option value="">-- Gagal memuat data --</option>';
+        } finally {
+            matchSelect.disabled = false;
         }
     }
 
@@ -79,6 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const [type, id] = val.split(':');
+        
+        scheduleDetailCard.style.display = 'none';
+        loadingIndicator.style.display = 'block';
 
         try {
             if (type === 'schedule') {
@@ -104,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusBadge.className = `status-badge is-${s.status}`;
                 statusBadge.textContent = FinderApp.formatStatus(s.status);
 
+                toggleFormInputs(s.status);
                 renderActionButtons(s.status);
             } else {
                 // New schedule from match
@@ -127,14 +137,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusBadge.className = 'status-badge is-pending';
                 statusBadge.textContent = 'Belum Dijadwalkan';
 
+                toggleFormInputs('new');
                 renderActionButtons('new');
             }
 
             scheduleDetailCard.style.display = 'block';
         } catch (error) {
             FinderApp.showToast('Gagal memuat detail.', 'error');
+        } finally {
+            loadingIndicator.style.display = 'none';
         }
     });
+
+    function toggleFormInputs(status) {
+        const isEditable = status === 'new' || status === 'disetujui';
+        scheduleDate.disabled = !isEditable;
+        scheduleTime.disabled = !isEditable;
+        scheduleLocation.disabled = !isEditable;
+        // Catatan selalu bisa diisi
+        scheduleNote.disabled = false; 
+    }
 
     function renderActionButtons(status) {
         actionButtons.innerHTML = '';
@@ -162,6 +184,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const loc = scheduleLocation.value.trim();
         const note = scheduleNote.value.trim();
 
+        if (new Date(date) < new Date(new Date().toDateString())) {
+            FinderApp.showToast('Tanggal jadwal tidak boleh di masa lalu.', 'error');
+            return;
+        }
+
         const dt = FinderApp.combineDateTime(date, time);
         if (!dt || !loc) {
             FinderApp.showToast('Tanggal, waktu, dan lokasi wajib diisi.', 'error');
@@ -185,6 +212,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = scheduleIdInput.value;
         const note = scheduleNote.value.trim();
 
+        if (action === 'ditolak' && !note) {
+            FinderApp.showToast('Wajib mengisi catatan alasan penolakan.', 'error');
+            scheduleNote.focus();
+            return;
+        }
+
         try {
             await FinderApp.apiFetch(`/api/pickup-schedules/${id}/review`, {
                 method: 'PUT',
@@ -204,6 +237,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const time = scheduleTime.value;
         const loc = scheduleLocation.value.trim();
         const note = scheduleNote.value.trim();
+
+        if (new Date(date) < new Date(new Date().toDateString())) {
+            FinderApp.showToast('Tanggal jadwal tidak boleh di masa lalu.', 'error');
+            return;
+        }
 
         const dt = FinderApp.combineDateTime(date, time);
         if (!dt || !loc) {
@@ -225,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.completePickup = async () => {
-        if (!confirm('Apakah serah terima barang sudah selesai? Aksi ini akan menyelesaikan laporan dan match terkait.')) return;
+        if (!confirm('Peringatan: Aksi ini menandakan bahwa barang sudah diserahkan kepada pelapor dengan benar!\n\nApakah serah terima barang secara fisik benar-benar sudah selesai? Status laporan akan ditutup setelah ini.')) return;
 
         const id = scheduleIdInput.value;
         const note = scheduleNote.value.trim();

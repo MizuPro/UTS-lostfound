@@ -18,12 +18,16 @@ require_once __DIR__ . '/partials/navbar-officer.php';
 
             <div class="report-shell">
                 <div class="report-card">
-                    <h2>Pilih Pencocokan</h2>
+                    <h2>Pilih Pencocokan / Jadwal</h2>
+                    <p class="helper-box mb-16">Pilih jadwal berdasarkan laporan yang sudah dicocokkan. Anda dapat menyetujui, mencocokkan ulang, atau menyelesaikan serah terima barang di sini.</p>
                     <div class="form-group">
-                        <label for="matchSelect">Pencocokan Diverifikasi / Jadwal Menunggu</label>
+                        <label for="matchSelect">Pencocokan Diverifikasi / Jadwal Aktif</label>
                         <select id="matchSelect">
-                            <option value="">-- Memuat pencocokan... --</option>
+                            <option value="">-- Memuat data... --</option>
                         </select>
+                        <div id="loadingIndicator" style="display:none; margin-top: 8px; font-size: 0.875rem; color: #666;">
+                            🔄 Memuat detail...
+                        </div>
                     </div>
                 </div>
 

@@ -49,12 +49,15 @@ require_once __DIR__ . '/partials/navbar.php';
                             <textarea id="scheduleNote" rows="3" placeholder="Contoh: Saya akan tiba menggunakan KRL arah Bogor..."></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-wide" id="btnSubmit">Ajukan Jadwal</button>
+                        <button type="submit" class="btn btn-primary" id="btnSubmit" style="width: 100%;">Ajukan Jadwal</button>
                     </form>
                 </div>
 
                 <div class="report-card">
                     <h2>Riwayat Jadwal</h2>
+                    <div id="scheduleLoadingIndicator" style="display:none; font-size: 0.875rem; color: #666; margin-bottom: 1rem;">
+                        🔄 Memuat riwayat jadwal...
+                    </div>
                     <div id="scheduleListContainer">
                         <div class="skeleton-grid">
                             <div class="info-line"></div><div class="info-line"></div>
