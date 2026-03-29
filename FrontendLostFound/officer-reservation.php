@@ -21,7 +21,7 @@ require_once __DIR__ . '/partials/navbar-officer.php';
                     <h2>Pilih Pencocokan / Jadwal</h2>
                     <p class="helper-box mb-16">Pilih jadwal berdasarkan laporan yang sudah dicocokkan. Anda dapat menyetujui, mencocokkan ulang, atau menyelesaikan serah terima barang di sini.</p>
                     <div class="form-group">
-                        <label for="matchSelect">Pencocokan Diverifikasi / Jadwal Aktif</label>
+                        <label for="matchSelect">Pilih Barang Hilang / Jadwal</label>
                         <select id="matchSelect">
                             <option value="">-- Memuat data... --</option>
                         </select>

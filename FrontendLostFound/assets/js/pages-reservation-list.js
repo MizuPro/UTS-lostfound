@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 verifiedMatches.forEach(m => {
                     const opt = document.createElement('option');
                     opt.value = m.id;
-                    opt.textContent = `Match #${m.id} - ${m.laporan_nama}`;
+                    opt.textContent = m.laporan_nama;
                     matchSelect.appendChild(opt);
                 });
             }
@@ -56,12 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 scheduleListContainer.innerHTML = '';
                 schedules.forEach(s => {
                     const card = document.createElement('div');
-                    card.className = 'match-list-item';
+                    card.className = 'schedule-card';
                     card.innerHTML = `
                         <div class="match-list-main">
-                            <div class="match-header">
-                                <h3>Jadwal Match #${s.match_id}</h3>
-                                <span class="status-badge is-${s.status}">${FinderApp.formatStatus(s.status)}</span>
+                            <div class="match-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <h3 style="margin: 0; font-weight: 700;">${s.laporan_nama || 'Jadwal Pengambilan'}</h3>
+                                <span class="status-badge is-${s.status}" style="flex-shrink: 0; margin-left: 12px;">${FinderApp.formatStatus(s.status)}</span>
                             </div>
                             <p class="text-sm"><strong>Waktu:</strong> ${FinderApp.formatDateTime(s.waktu_jadwal)}</p>
                             <p class="text-sm"><strong>Lokasi:</strong> ${FinderApp.escapeHtml(s.lokasi_pengambilan)}</p>

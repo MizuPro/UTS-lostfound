@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             schedules.forEach(s => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>#${s.match_id}</strong></td>
+                    <td><strong>${FinderApp.escapeHtml(s.laporan_nama || 'Barang Anda')}</strong></td>
                     <td>${FinderApp.escapeHtml(s.pelapor_name || '-')}</td>
                     <td>${FinderApp.formatDateTime(s.waktu_jadwal)}</td>
                     <td>${FinderApp.escapeHtml(s.lokasi_pengambilan)}</td>

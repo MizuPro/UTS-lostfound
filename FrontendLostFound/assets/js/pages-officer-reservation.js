@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const opt = document.createElement('option');
                     opt.value = `schedule:${s.id}`;
                     let dateLabel = s.waktu_jadwal ? ` - ${FinderApp.formatDateTime(s.waktu_jadwal)}` : '';
-                    opt.textContent = `[${s.status.toUpperCase()}] Match #${s.match_id} - ${s.pelapor_name}${dateLabel}`;
+                    opt.textContent = `[${s.status.toUpperCase()}] ${s.laporan_nama} (${s.pelapor_name})${dateLabel}`;
                     group.appendChild(opt);
                 });
                 matchSelect.appendChild(group);
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 availableMatches.forEach(m => {
                     const opt = document.createElement('option');
                     opt.value = `match:${m.id}`;
-                    opt.textContent = `[SIAP] Match #${m.id} - ${m.pelapor_name} - ${m.laporan_nama}`;
+                    opt.textContent = `[SIAP] ${m.laporan_nama} (${m.pelapor_name})`;
                     group.appendChild(opt);
                 });
                 matchSelect.appendChild(group);

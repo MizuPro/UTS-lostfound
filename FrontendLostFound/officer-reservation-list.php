@@ -20,7 +20,7 @@ require_once __DIR__ . '/partials/navbar-officer.php';
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Match ID</th>
+                                <th>Barang Hilang</th>
                                 <th>Pelapor</th>
                                 <th>Jadwal</th>
                                 <th>Lokasi</th>

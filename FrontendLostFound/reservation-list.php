@@ -22,7 +22,7 @@ require_once __DIR__ . '/partials/navbar.php';
                     <p class="helper-box mb-16">Pilih laporan kehilangan yang sudah terverifikasi kecocokannya dengan barang temuan, lalu ajukan jadwal pengambilan di stasiun.</p>
                     <form id="proposeScheduleForm" class="form-stack">
                         <div class="form-group">
-                            <label for="matchSelect">Laporan (Match ID) <span class="required">*</span></label>
+                            <label for="matchSelect">Barang yang Dilaporkan Hilang <span class="required">*</span></label>
                             <select id="matchSelect" required>
                                 <option value="">-- Memuat data... --</option>
                             </select>
