@@ -20,22 +20,15 @@ require_once __DIR__ . '/includes/url.php';
             <span class="eyebrow">Sign Up</span>
             <h1>Buat akun baru untuk mulai menggunakan Finder.</h1>
             <div class="promo-panel">
-                <strong>Pendaftaran dibuat sederhana</strong>
-                <p>Cukup isi nama, email, password, lalu pilih jenis akun yang sesuai.</p>
+                <strong>Satu akun untuk semua layanan</strong>
+                <p>Buat laporan barang hilang, pantau statusnya, dan terima notifikasi pencocokan secara real-time.</p>
             </div>
         </div>
 
         <div class="auth-card auth-card-large">
             <div class="auth-card-logo">🔎</div>
             <h2>Daftar Akun</h2>
-            <p class="muted center">Pilih jenis akun yang sesuai sebelum melanjutkan.</p>
-
-            <div class="role-switch" id="registerRoleSwitch">
-                <button type="button" class="role-pill is-active" data-role="pelapor">User / Pelapor</button>
-                <button type="button" class="role-pill" data-role="petugas">Petugas</button>
-            </div>
-
-            <div class="role-helper" id="roleHelperText">Cocok untuk penumpang yang ingin melaporkan barang hilang dan memantau prosesnya.</div>
+            <p class="muted center">Lengkapi data di bawah ini untuk memulai.</p>
 
             <form id="registerForm" class="form-stack">
                 <input type="hidden" id="role" name="role" value="pelapor">

@@ -1,23 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registerForm');
     const roleInput = document.getElementById('role');
-    const roleHelper = document.getElementById('roleHelperText');
-    const pills = document.querySelectorAll('.role-pill');
-
-    const roleDescriptions = {
-        pelapor: 'Cocok untuk penumpang yang ingin melaporkan barang hilang dan memantau prosesnya.',
-        petugas: 'Cocok untuk petugas yang mencatat barang temuan dan menangani proses pencocokan.',
-    };
-
-    pills.forEach((pill) => {
-        pill.addEventListener('click', () => {
-            pills.forEach((item) => item.classList.remove('is-active'));
-            pill.classList.add('is-active');
-            const role = pill.dataset.role;
-            roleInput.value = role;
-            roleHelper.textContent = roleDescriptions[role] || '';
-        });
-    });
 
     if (!form) return;
 
