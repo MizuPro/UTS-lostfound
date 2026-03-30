@@ -69,4 +69,36 @@ require_once __DIR__ . '/partials/navbar.php';
     </section>
 </main>
 <?php require_once __DIR__ . '/partials/modal-location.php'; ?>
+
+<div class="finder-modal" id="reviseScheduleModal" hidden>
+    <div class="finder-modal-backdrop" data-close-modal></div>
+    <div class="finder-modal-dialog">
+        <button class="finder-modal-close" type="button" data-close-modal>&times;</button>
+        <h3>Ajukan Revisi Jadwal</h3>
+        <p style="margin-top: 8px; color: var(--text-soft); font-size: 14px; line-height: 1.6;">Masukkan waktu dan lokasi baru yang Anda inginkan. Permintaan akan dikirim ke petugas untuk disetujui kembali.</p>
+        <form id="reviseScheduleForm" class="form-stack mt-16">
+            <input type="hidden" id="reviseScheduleId">
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="reviseDateInput">Tanggal Baru <span class="required">*</span></label>
+                    <input type="date" id="reviseDateInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="reviseTimeInput">Waktu Baru <span class="required">*</span></label>
+                    <input type="time" id="reviseTimeInput" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="reviseLocationInput">Lokasi Pengambilan Baru <span class="required">*</span></label>
+                <input type="text" id="reviseLocationInput" placeholder="Contoh: Stasiun Bekasi" required>
+            </div>
+            <div class="form-group">
+                <label for="reviseNoteInput">Alasan / Catatan (Opsional)</label>
+                <textarea id="reviseNoteInput" rows="3" placeholder="Contoh: Saya tidak bisa datang di waktu semula karena ada keperluan mendadak..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Kirim Permohonan Revisi</button>
+        </form>
+    </div>
+</div>
+
 <?php $pageScript = 'assets/js/pages-reservation-list.js'; require_once __DIR__ . '/partials/footer.php'; ?>

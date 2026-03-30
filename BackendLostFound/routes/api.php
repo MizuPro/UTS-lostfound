@@ -58,6 +58,7 @@ return [
     'POST /api/pickup-schedules'              => ['PickupScheduleController', 'create',     ['auth', 'role:petugas,pelapor']],
     'PUT /api/pickup-schedules/{id}/review'   => ['PickupScheduleController', 'review',     ['auth', 'role:petugas']],
     'PUT /api/pickup-schedules/{id}/reschedule' => ['PickupScheduleController', 'reschedule', ['auth', 'role:petugas']],
+    'PUT /api/pickup-schedules/{id}/revise'   => ['PickupScheduleController', 'revise',     ['auth', 'role:pelapor']],
     'PUT /api/pickup-schedules/{id}/cancel'   => ['PickupScheduleController', 'cancel',     ['auth', 'role:petugas,pelapor']],
     'PUT /api/pickup-schedules/{id}/complete' => ['PickupScheduleController', 'complete',   ['auth', 'role:petugas']],
 ];

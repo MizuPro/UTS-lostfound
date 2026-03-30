@@ -275,8 +275,8 @@ class PickupScheduleController
             ResponseHelper::forbidden('Anda tidak berhak membatalkan jadwal ini.');
         }
 
-        if ($schedule['status'] !== 'menunggu_persetujuan') {
-            ResponseHelper::error('Jadwal hanya bisa dibatalkan pelapor saat status menunggu_persetujuan.', 409);
+        if (!in_array($schedule['status'], ['menunggu_persetujuan', 'disetujui'], true)) {
+            ResponseHelper::error('Jadwal hanya bisa dibatalkan saat berstatus menunggu_persetujuan atau disetujui.', 409);
         }
 
         $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
@@ -288,6 +288,62 @@ class PickupScheduleController
         ResponseHelper::success(
             ['pickup_schedule' => $updated],
             'Jadwal pengambilan berhasil dibatalkan.'
+        );
+    }
+
+    // ── PUT /api/pickup-schedules/{id}/revise ───────────────────────────────
+    /**
+     * Pelapor mengajukan perubahan jadwal (revisi) atas jadwal yang sudah disetujui.
+     * Sistem akan back ke status menunggu_persetujuan dan update waktu/lokasi.
+     */
+    public function revise(): void
+    {
+        $authUser = $GLOBALS['auth_user'] ?? null;
+        $userId = (int) ($authUser['user_id'] ?? 0);
+        $id = (int) ($GLOBALS['route_params']['id'] ?? 0);
+
+        $schedule = $this->scheduleModel->findById($id);
+        if (!$schedule) {
+            ResponseHelper::notFound('Jadwal pengambilan tidak ditemukan.');
+        }
+
+        if ((int) $schedule['pelapor_id'] !== $userId) {
+            ResponseHelper::forbidden('Anda tidak berhak mengajukan revisi untuk jadwal ini.');
+        }
+
+        if ($schedule['status'] !== 'disetujui') {
+            ResponseHelper::error('Revisi hanya bisa diajukan untuk jadwal yang sudah disetujui.', 409);
+        }
+
+        $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
+        $errors = ValidationHelper::required($input, ['waktu_jadwal', 'lokasi_pengambilan']);
+        if (!empty($errors)) {
+            ResponseHelper::validationError($errors);
+        }
+
+        if (!ValidationHelper::maxLength($input['lokasi_pengambilan'], 200)) {
+            ResponseHelper::validationError(['lokasi_pengambilan' => 'Lokasi pengambilan maksimal 200 karakter.']);
+        }
+
+        if (!$this->isValidDateTime($input['waktu_jadwal'])) {
+            ResponseHelper::validationError(['waktu_jadwal' => 'Format waktu_jadwal harus: YYYY-MM-DD HH:MM:SS']);
+        }
+
+        $catatan = isset($input['catatan']) ? trim($input['catatan']) : null;
+
+        // Update waktu, lokasi, catatan, dan kembalikan status ke menunggu_persetujuan
+        $this->scheduleModel->updateActive($id, [
+            'waktu_jadwal'       => $input['waktu_jadwal'],
+            'lokasi_pengambilan' => $input['lokasi_pengambilan'],
+            'catatan'            => $catatan,
+        ]);
+
+        $this->scheduleModel->updateStatus($id, 'menunggu_persetujuan', null, $catatan);
+
+        $updated = $this->scheduleModel->findById($id);
+        ResponseHelper::success(
+            ['pickup_schedule' => $updated],
+            'Permintaan revisi jadwal berhasil diajukan. Menunggu persetujuan petugas.'
         );
     }
 
