@@ -78,6 +78,12 @@ require_once __DIR__ . '/partials/navbar-officer.php';
                             <div id="scheduleStatusBadge" class="status-badge"></div>
                         </div>
 
+                        <div class="form-group" id="handoverPhotoContainer" style="display:none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                            <label for="handoverPhoto" class="required">Foto Bukti Serah Terima (Wajib untuk Selesaikan Handover)</label>
+                            <input type="file" id="handoverPhoto" name="foto_bukti_serah" accept="image/jpeg, image/png, image/webp" class="form-control">
+                            <small class="muted">Format: JPG, PNG, atau WebP. Maksimal 5 MB.</small>
+                        </div>
+
                         <div class="action-buttons mt-16" id="actionButtons">
                             <!-- Buttons rendered dynamically -->
                         </div>

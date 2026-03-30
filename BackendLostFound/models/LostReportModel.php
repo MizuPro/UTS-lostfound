@@ -89,8 +89,10 @@ class LostReportModel
         $sql = 'SELECT lk.id, lk.pelapor_id,
                        lk.nama_barang, lk.deskripsi, lk.lokasi,
                        lk.waktu_hilang, lk.foto_path, lk.status,
-                       lk.created_at, lk.updated_at
+                       lk.created_at, lk.updated_at,
+                       p.foto_bukti_serah, p.waktu_serah
                 FROM laporan_kehilangan lk
+                LEFT JOIN pencocokan p ON lk.id = p.laporan_id AND p.status = \'selesai\'
                 WHERE lk.pelapor_id = ?';
         $params = [$pelaporId];
 
@@ -120,8 +122,10 @@ class LostReportModel
             'SELECT lk.id, lk.pelapor_id,
                     lk.nama_barang, lk.deskripsi, lk.lokasi,
                     lk.waktu_hilang, lk.foto_path, lk.status,
-                    lk.created_at, lk.updated_at
+                    lk.created_at, lk.updated_at,
+                    p.foto_bukti_serah, p.waktu_serah
              FROM laporan_kehilangan lk
+             LEFT JOIN pencocokan p ON lk.id = p.laporan_id AND p.status = \'selesai\'
              WHERE lk.id = ? AND lk.pelapor_id = ?
              LIMIT 1'
         );

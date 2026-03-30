@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const scheduleLocation = document.getElementById('scheduleLocation');
     const scheduleNote = document.getElementById('scheduleNote');
     const statusBadge = document.getElementById('scheduleStatusBadge');
+    const handoverPhotoContainer = document.getElementById('handoverPhotoContainer');
+    const handoverPhotoInput = document.getElementById('handoverPhoto');
     const actionButtons = document.getElementById('actionButtons');
     const loadingIndicator = document.getElementById('loadingIndicator');
 
@@ -156,6 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
         scheduleLocation.disabled = !isEditable;
         // Catatan selalu bisa diisi
         scheduleNote.disabled = false; 
+
+        if (status === 'disetujui') {
+            handoverPhotoContainer.style.display = 'block';
+            handoverPhotoInput.value = ''; // Reset input
+        } else {
+            handoverPhotoContainer.style.display = 'none';
+        }
     }
 
     function renderActionButtons(status) {
@@ -267,11 +276,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const id = scheduleIdInput.value;
         const note = scheduleNote.value.trim();
+        const file = handoverPhotoInput.files[0];
+
+        if (!file) {
+            FinderApp.showToast('Foto bukti serah terima wajib diunggah.', 'error');
+            handoverPhotoInput.focus();
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('_method', 'PUT'); // Method spoofing karena HTML FormData multipart defaultnya POST tidak bisa baca PUT
+        formData.append('catatan', note);
+        formData.append('foto_bukti_serah', file);
 
         try {
             await FinderApp.apiFetch(`/api/pickup-schedules/${id}/complete`, {
-                method: 'PUT',
-                body: { catatan: note }
+                method: 'POST', // Gunakan POST untuk kirim file, method di-spoof jadi PUT di backend
+                body: formData
             });
             FinderApp.showToast(`Pengambilan barang selesai!`, 'success');
             loadSchedules();

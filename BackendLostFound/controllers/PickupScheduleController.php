@@ -347,7 +347,7 @@ class PickupScheduleController
         );
     }
 
-    // ── PUT /api/pickup-schedules/{id}/complete ──────────────────────────────
+    // ── PUT /api/pickup-schedules/{id}/complete ──────────────────────────────────
     public function complete(): void
     {
         $authUser = $GLOBALS['auth_user'] ?? null;
@@ -372,16 +372,32 @@ class PickupScheduleController
             ResponseHelper::error('Pencocokan harus berstatus diverifikasi untuk menyelesaikan pengambilan.', 409);
         }
 
-        $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (strpos($contentType, 'multipart/form-data') !== false) {
+            $input = ValidationHelper::sanitizeAll($_POST);
+        } else {
+            $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
+        }
+
         $catatan = isset($input['catatan']) ? trim($input['catatan']) : null;
         $waktuSerah = date('Y-m-d H:i:s');
 
+        if (empty($_FILES['foto_bukti_serah']) || $_FILES['foto_bukti_serah']['error'] === UPLOAD_ERR_NO_FILE) {
+            ResponseHelper::validationError([
+                'foto_bukti_serah' => 'Foto bukti handover wajib diunggah.'
+            ]);
+        }
+
+        $fotoBuktiSerah = null;
+
         try {
+            $fotoBuktiSerah = $this->handleHandoverPhotoUpload($_FILES['foto_bukti_serah']);
+
             $db = Database::getInstance();
             $db->beginTransaction();
 
             $this->scheduleModel->updateStatus($id, 'selesai', $petugasId, $catatan, $waktuSerah);
-            $this->matchModel->updateStatus((int) $schedule['match_id'], 'selesai', $catatan, $waktuSerah);
+            $this->matchModel->updateStatus((int) $schedule['match_id'], 'selesai', $catatan, $waktuSerah, $fotoBuktiSerah);
 
             $this->foundItemModel->archive((int) $match['barang_temuan_id'], $catatan);
 
@@ -398,9 +414,61 @@ class PickupScheduleController
                 'Pengambilan berhasil diselesaikan.'
             );
         } catch (\Exception $e) {
-            $db->rollBack();
+            if (isset($db) && $db->inTransaction()) {
+                $db->rollBack();
+            }
+            // Hapus file file jika DB gagal
+            if ($fotoBuktiSerah && file_exists(UPLOAD_PATH . '/' . $fotoBuktiSerah)) {
+                @unlink(UPLOAD_PATH . '/' . $fotoBuktiSerah);
+            }
             ResponseHelper::error('Terjadi kesalahan saat menyelesaikan pengambilan: ' . $e->getMessage(), 500);
         }
+    }
+
+    private function handleHandoverPhotoUpload(array $file): string
+    {
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            ResponseHelper::validationError([
+                'foto_bukti_serah' => 'Upload foto bukti handover gagal.'
+            ]);
+        }
+
+        if ($file['size'] > MAX_FILE_SIZE) {
+            ResponseHelper::validationError([
+                'foto_bukti_serah' => 'Ukuran foto maksimal 5 MB.'
+            ]);
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($mimeType, ALLOWED_TYPES, true)) {
+            ResponseHelper::validationError([
+                'foto_bukti_serah' => 'Format foto tidak didukung. Gunakan JPEG, PNG, atau WebP.'
+            ]);
+        }
+
+        $handoverDir = rtrim(UPLOAD_PATH, '/\\') . DIRECTORY_SEPARATOR . 'handover' . DIRECTORY_SEPARATOR;
+
+        if (!is_dir($handoverDir) && !mkdir($handoverDir, 0755, true)) {
+            throw new \RuntimeException('Gagal membuat folder upload handover.');
+        }
+
+        if (!is_writable($handoverDir)) {
+            throw new \RuntimeException('Folder upload handover tidak bisa ditulis.');
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $fileName = 'handover_' . uniqid('', true) . '.' . $ext;
+        $destPath = $handoverDir . $fileName;
+
+        if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+            throw new \RuntimeException('Gagal menyimpan foto bukti handover.');
+        }
+
+        // Return path relatif untuk database
+        return 'handover/' . $fileName;
     }
 
     private function isValidDateTime(string $value): bool
