@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const openCreateMatchBtn = document.getElementById('openCreateMatchBtn');
     const createLostPreview = document.getElementById('createMatchLostPreview');
     const createFoundPreview = document.getElementById('createMatchFoundPreview');
+    const matchActionPhotoGroup = document.getElementById('matchActionPhotoGroup');
+    const matchActionPhoto = document.getElementById('matchActionPhoto');
     let lostReports = [];
     let foundItems = [];
     let matches = [];
@@ -84,6 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="meta-item"><span>Waktu Serah</span><strong>${FinderApp.escapeHtml(FinderApp.formatDateTime(item.waktu_serah))}</strong></div>
                     <div class="meta-item"><span>Diperbarui</span><strong>${FinderApp.escapeHtml(FinderApp.formatDateTime(item.updated_at))}</strong></div>
                 </div>
+                ${item.foto_bukti_serah ? `
+                    <div class="mt-16">
+                        <span class="muted">Bukti Handover</span>
+                        <div class="detail-box image-box mt-8">
+                            ${FinderApp.fileToPreviewHtml(item.foto_bukti_serah, 'Bukti Handover')}
+                        </div>
+                    </div>
+                ` : ''}
                 <div class="report-actions mt-16">
                     ${item.status === 'pending' ? `<button type="button" class="btn btn-secondary" data-match-action="verify" data-match-id="${item.id}">Verify</button>` : ''}
                     ${item.status === 'diverifikasi' ? `<button type="button" class="btn btn-primary" data-match-action="handover" data-match-id="${item.id}">Handover</button>` : ''}
@@ -207,27 +217,76 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('matchActionTitle').textContent = titleMap[action] || 'Proses Match';
         document.getElementById('matchActionSubmitBtn').textContent = action === 'handover' ? 'Selesaikan Handover' : (action === 'cancel' ? 'Batalkan Match' : 'Verifikasi');
         document.getElementById('matchActionNote').value = '';
+        matchActionPhoto.value = '';
+
+        if (action === 'handover') {
+            matchActionPhotoGroup.classList.remove('hidden');
+            matchActionPhoto.required = true;
+        } else {
+            matchActionPhotoGroup.classList.add('hidden');
+            matchActionPhoto.required = false;
+        }
+
         FinderApp.openModal('matchActionModal');
     });
 
     document.getElementById('matchActionForm').addEventListener('submit', async (event) => {
         event.preventDefault();
+    
         const id = document.getElementById('matchActionId').value;
         const action = document.getElementById('matchActionType').value;
         const note = document.getElementById('matchActionNote').value.trim();
         const btn = document.getElementById('matchActionSubmitBtn');
+    
+        const buttonLabelMap = {
+            verify: 'Verifikasi',
+            handover: 'Selesaikan Handover',
+            cancel: 'Batalkan Match',
+        };
+    
         btn.disabled = true;
         btn.textContent = 'Memproses...';
+    
         const endpointMap = {
             verify: `/api/matches/${id}/verify`,
             handover: `/api/matches/${id}/handover`,
             cancel: `/api/matches/${id}/cancel`,
         };
+    
         try {
-            await FinderApp.apiFetch(endpointMap[action], {
-                method: 'PUT',
-                body: { catatan: note },
-            });
+            if (action === 'handover') {
+                const file = matchActionPhoto.files[0];
+    
+                if (!file) {
+                    FinderApp.showToast('Foto bukti handover wajib diunggah.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = buttonLabelMap[action];
+                    return;
+                }
+    
+                if (file.size > 5 * 1024 * 1024) {
+                    FinderApp.showToast('Ukuran foto maksimal 5 MB.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = buttonLabelMap[action];
+                    return;
+                }
+    
+                const formData = new FormData();
+                formData.append('_method', 'PUT');
+                formData.append('catatan', note);
+                formData.append('foto_bukti_serah', file);
+    
+                await FinderApp.apiFetch(endpointMap[action], {
+                    method: 'POST',
+                    body: formData,
+                });
+            } else {
+                await FinderApp.apiFetch(endpointMap[action], {
+                    method: 'PUT',
+                    body: { catatan: note },
+                });
+            }
+    
             FinderApp.showToast('Aksi match berhasil diproses.', 'success');
             FinderApp.closeModal(document.getElementById('matchActionModal'));
             await loadSelectableData();
@@ -236,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
             FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Gagal memproses aksi match.'), 'error');
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Simpan';
+            btn.textContent = buttonLabelMap[action] || 'Simpan';
         }
     });
 

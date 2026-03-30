@@ -211,7 +211,6 @@ class MatchController
             ResponseHelper::notFound('Data pencocokan tidak ditemukan.');
         }
 
-        // Pastikan statusnya diverifikasi sebelum bisa diselesaikan
         if ($match['status'] !== 'diverifikasi') {
             ResponseHelper::error('Hanya pencocokan berstatus diverifikasi yang dapat diselesaikan handovers-nya.', 409);
         }
@@ -219,27 +218,45 @@ class MatchController
         $authUser = $GLOBALS['auth_user'] ?? null;
         $petugasId = (int) ($authUser['user_id'] ?? 0);
 
-        $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (strpos($contentType, 'multipart/form-data') !== false) {
+            $input = ValidationHelper::sanitizeAll($_POST);
+        } else {
+            $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
+        }
+
         $catatan = isset($input['catatan']) ? trim($input['catatan']) : 'Handover diselesaikan oleh petugas';
         $waktuSerah = date('Y-m-d H:i:s');
 
+        if (empty($_FILES['foto_bukti_serah']) || $_FILES['foto_bukti_serah']['error'] === UPLOAD_ERR_NO_FILE) {
+            ResponseHelper::validationError([
+                'foto_bukti_serah' => 'Foto bukti handover wajib diunggah.'
+            ]);
+        }
+
+        $fotoBuktiSerah = null;
+
         try {
+            $fotoBuktiSerah = $this->handleHandoverPhotoUpload($_FILES['foto_bukti_serah']);
+
             $db = Database::getInstance();
             $db->beginTransaction();
 
-            // 1. Update status pencocokan -> selesai
-            $this->matchModel->updateStatus($id, 'selesai', $catatan, $waktuSerah);
+            $this->matchModel->updateStatus(
+                $id,
+                'selesai',
+                $catatan,
+                $waktuSerah,
+                $fotoBuktiSerah
+            );
 
-            // 2. Update status barang temuan -> selesai (archived)
             $this->foundItemModel->archive($match['barang_temuan_id'], $catatan);
 
-            // 3. Update status laporan kehilangan -> selesai
             $laporan = $this->lostReportModel->findById((int) $match['laporan_id']);
             if ($laporan) {
                 $this->lostReportModel->update((int) $match['laporan_id'], array_merge($laporan, ['status' => 'selesai']));
             }
 
-            // 4. Jika ada jadwal aktif untuk match ini, selesaikan juga
             $activeSchedule = $this->scheduleModel->findActiveByMatchId($id);
             if ($activeSchedule) {
                 $this->scheduleModel->updateStatus((int) $activeSchedule['id'], 'selesai', $petugasId, $catatan, $waktuSerah);
@@ -250,11 +267,21 @@ class MatchController
             $updatedMatch = $this->matchModel->findById($id);
             ResponseHelper::success(
                 ['match' => $updatedMatch],
-                'Handover berhasil dicatat. Status barang, laporan, dan jadwal (jika ada) telah diperbarui menjadi selesai.'
+                'Handover berhasil dicatat beserta foto bukti.'
             );
 
         } catch (\Exception $e) {
-            $db->rollBack();
+            if (isset($db) && $db->inTransaction()) {
+                $db->rollBack();
+            }
+
+            if ($fotoBuktiSerah) {
+                $uploadedFile = __DIR__ . '/../storage/' . $fotoBuktiSerah;
+                if (file_exists($uploadedFile)) {
+                    @unlink($uploadedFile);
+                }
+            }
+
             ResponseHelper::error('Terjadi kesalahan saat mencatat handover: ' . $e->getMessage(), 500);
         }
     }
@@ -307,5 +334,50 @@ class MatchController
             $db->rollBack();
             ResponseHelper::error('Terjadi kesalahan saat membatalkan pencocokan: ' . $e->getMessage(), 500);
         }
+    }
+
+    private function handleHandoverPhotoUpload(array $file): string
+    {
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            ResponseHelper::validationError([
+                'foto_bukti_serah' => 'Upload foto bukti handover gagal.'
+            ]);
+        }
+
+        if ($file['size'] > MAX_FILE_SIZE) {
+            ResponseHelper::validationError([
+                'foto_bukti_serah' => 'Ukuran foto maksimal 5 MB.'
+            ]);
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($mimeType, ALLOWED_TYPES, true)) {
+            ResponseHelper::validationError([
+                'foto_bukti_serah' => 'Format foto tidak didukung. Gunakan JPEG, PNG, atau WebP.'
+            ]);
+        }
+
+        $handoverDir = rtrim(UPLOAD_PATH, '/\\') . DIRECTORY_SEPARATOR . 'handover' . DIRECTORY_SEPARATOR;
+
+        if (!is_dir($handoverDir) && !mkdir($handoverDir, 0755, true)) {
+            throw new \RuntimeException('Gagal membuat folder upload handover.');
+        }
+
+        if (!is_writable($handoverDir)) {
+            throw new \RuntimeException('Folder upload handover tidak bisa ditulis.');
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $fileName = 'handover_' . uniqid('', true) . '.' . $ext;
+        $destPath = $handoverDir . $fileName;
+
+        if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+            throw new \RuntimeException('Gagal menyimpan foto bukti handover.');
+        }
+
+        return 'uploads/handover/' . $fileName;
     }
 }

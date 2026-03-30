@@ -23,18 +23,18 @@ class MatchModel
     public function getAll(array $filters = []): array
     {
         $sql = 'SELECT p.id, p.barang_temuan_id, p.laporan_id, p.petugas_id,
-                       p.status, p.catatan, p.waktu_serah, p.created_at, p.updated_at,
-                       bt.nama_barang AS barang_temuan_nama,
-                       lk.nama_barang AS laporan_nama,
-                       u.name AS petugas_name,
-                       pelapor.name AS pelapor_name,
-                       pelapor.email AS pelapor_email
-                FROM pencocokan p
-                JOIN barang_temuan bt ON p.barang_temuan_id = bt.id
-                JOIN laporan_kehilangan lk ON p.laporan_id = lk.id
-                JOIN users u ON p.petugas_id = u.id
-                JOIN users pelapor ON lk.pelapor_id = pelapor.id
-                WHERE 1=1';
+                p.status, p.catatan, p.waktu_serah, p.foto_bukti_serah, p.created_at, p.updated_at,
+                bt.nama_barang AS barang_temuan_nama,
+                lk.nama_barang AS laporan_nama,
+                u.name AS petugas_name,
+                pelapor.name AS pelapor_name,
+                pelapor.email AS pelapor_email
+            FROM pencocokan p
+            JOIN barang_temuan bt ON p.barang_temuan_id = bt.id
+            JOIN laporan_kehilangan lk ON p.laporan_id = lk.id
+            JOIN users u ON p.petugas_id = u.id
+            JOIN users pelapor ON lk.pelapor_id = pelapor.id
+            WHERE 1=1';
         $params = [];
 
         if (!empty($filters['status'])) {
@@ -68,7 +68,7 @@ class MatchModel
     {
         $stmt = $this->db->prepare(
             'SELECT p.id, p.barang_temuan_id, p.laporan_id, p.petugas_id,
-                    p.status, p.catatan, p.waktu_serah, p.created_at, p.updated_at,
+                    p.status, p.catatan, p.waktu_serah, p.foto_bukti_serah, p.created_at, p.updated_at,
                     bt.nama_barang AS barang_temuan_nama,
                     lk.nama_barang AS laporan_nama,
                     u.name AS petugas_name,
@@ -110,19 +110,27 @@ class MatchModel
     /**
      * Update data pencocokan (status, catatan, waktu_serah)
      */
-    public function updateStatus(int $id, string $status, ?string $catatan = null, ?string $waktuSerah = null): bool
-    {
+    public function updateStatus(
+        int $id,
+        string $status,
+        ?string $catatan = null,
+        ?string $waktuSerah = null,
+        ?string $fotoBuktiSerah = null
+    ): bool {
         $stmt = $this->db->prepare(
             'UPDATE pencocokan
-             SET status      = ?,
-                 catatan     = COALESCE(?, catatan),
-                 waktu_serah = COALESCE(?, waktu_serah)
+             SET status            = ?,
+                 catatan           = COALESCE(?, catatan),
+                 waktu_serah       = COALESCE(?, waktu_serah),
+                 foto_bukti_serah  = COALESCE(?, foto_bukti_serah)
              WHERE id = ?'
         );
+    
         return $stmt->execute([
             $status,
             $catatan,
             $waktuSerah,
+            $fotoBuktiSerah,
             $id,
         ]);
     }

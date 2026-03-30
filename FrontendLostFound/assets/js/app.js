@@ -224,12 +224,22 @@
 
     function syncBodyScrollLock() {
         const hasOpenModal = document.querySelector('.finder-modal:not([hidden])');
+    
         if (hasOpenModal) {
             document.body.classList.add('finder-modal-open');
             document.body.style.overflow = 'hidden';
+            return;
+        }
+    
+        document.body.classList.remove('finder-modal-open');
+    
+        if (document.body.classList.contains('theme-auth')) {
+            document.body.style.overflowX = 'hidden';
+            document.body.style.overflowY = 'auto';
         } else {
-            document.body.classList.remove('finder-modal-open');
             document.body.style.overflow = '';
+            document.body.style.overflowX = '';
+            document.body.style.overflowY = '';
         }
     }
     
@@ -247,11 +257,13 @@
     
         modal.hidden = true;
         modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('finder-modal-open');
+        document.body.style.overflow = '';
         syncBodyScrollLock();
     }
     
     function closeAllModals() {
-        document.querySelectorAll('.finder-modal:not([hidden])').forEach((modal) => {
+        document.querySelectorAll('.finder-modal:not([hidden]), .modal:not([hidden])').forEach((modal) => {
             closeModal(modal);
         });
     }
@@ -510,6 +522,13 @@
     document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('finder-modal-open');
         document.body.style.overflow = '';
+        document.body.style.overflowX = '';
+        document.body.style.overflowY = '';
+
+        if (document.body.classList.contains('theme-auth')) {
+            document.body.style.overflowX = 'hidden';
+            document.body.style.overflowY = 'auto';
+        }
     
         document.querySelectorAll('.finder-modal').forEach((modal) => {
             if (!modal.hasAttribute('hidden')) {

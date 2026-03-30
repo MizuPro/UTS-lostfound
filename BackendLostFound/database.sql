@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS `pencocokan` (
     `status`            ENUM('pending','diverifikasi','selesai','dibatalkan') NOT NULL DEFAULT 'pending',
     `catatan`           TEXT,
     `waktu_serah`       DATETIME        DEFAULT NULL,
+    `foto_bukti_serah`  VARCHAR(255)    DEFAULT NULL,
     `created_at`        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
@@ -104,17 +105,22 @@ CREATE TABLE IF NOT EXISTS `jadwal_pengambilan` (
 
 -- ── Tabel: chat_rooms ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS `chat_rooms` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `firebase_room_id` VARCHAR(50) NOT NULL UNIQUE,
-    `petugas_id` INT NOT NULL,
-    `pelapor_id` INT NOT NULL,
-    `laporan_id` INT NOT NULL,
-    `status` ENUM('aktif', 'selesai') DEFAULT 'aktif',
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (`petugas_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`pelapor_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`laporan_id`) REFERENCES `laporan_kehilangan`(`id`) ON DELETE CASCADE
+    `petugas_id` INT UNSIGNED NOT NULL,
+    `pelapor_id` INT UNSIGNED NOT NULL,
+    `laporan_id` INT UNSIGNED NOT NULL,
+    `status` ENUM('aktif', 'selesai') NOT NULL DEFAULT 'aktif',
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `fk_cr_petugas` FOREIGN KEY (`petugas_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_cr_pelapor` FOREIGN KEY (`pelapor_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_cr_laporan` FOREIGN KEY (`laporan_id`) REFERENCES `laporan_kehilangan`(`id`) ON DELETE CASCADE,
+    INDEX `idx_cr_petugas` (`petugas_id`),
+    INDEX `idx_cr_pelapor` (`pelapor_id`),
+    INDEX `idx_cr_laporan` (`laporan_id`),
+    INDEX `idx_cr_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ── Data Seed: akun petugas default ──────────────────────────

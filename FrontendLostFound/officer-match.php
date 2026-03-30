@@ -111,6 +111,16 @@ require_once __DIR__ . '/partials/navbar-officer.php';
                 <label for="matchActionNote">Catatan</label>
                 <textarea id="matchActionNote" rows="5" placeholder="Opsional. Isi catatan verifikasi / penyerahan / pembatalan."></textarea>
             </div>
+
+            <div class="form-group hidden" id="matchActionPhotoGroup">
+                <label for="matchActionPhoto">Foto Bukti Handover <span class="required">*</span></label>
+                <input
+                    type="file"
+                    id="matchActionPhoto"
+                    accept="image/jpeg,image/png,image/webp"
+                >
+                <small class="muted">Wajib diisi saat proses handover. Format: JPG, PNG, atau WebP. Maksimal 5 MB.</small>
+            </div>
             <button type="submit" class="btn btn-primary btn-block" id="matchActionSubmitBtn">Simpan</button>
         </form>
     </div>
