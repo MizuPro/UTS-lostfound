@@ -46,7 +46,6 @@ img { max-width: 100%; display: block; }
     min-height: 100vh;
     background: #0d0d0f;
     position: relative;
-    overflow: hidden;
 }
 
 .theme-auth::before,
@@ -1215,7 +1214,7 @@ a, button, input, textarea, select {
 .match-action-bar,
 .reservation-disabled-card {
     position: relative;
-    overflow: hidden;
+    overflow: clip;
 }
 
 .metric-card::after,
@@ -1235,7 +1234,7 @@ a, button, input, textarea, select {
 
 .auth-layout {
     position: relative;
-    overflow: hidden;
+    overflow: clip;
     border: 1px solid rgba(255,255,255,0.18);
 }
 
@@ -1801,6 +1800,16 @@ body.finder-modal-open {
     border-radius: 26px;
     box-shadow: 0 24px 60px rgba(0,0,0,0.16);
     padding: 24px;
+    display: flex;
+    flex-direction: column;
+    max-height: 88vh;
+}
+
+.modal-content-area {
+    overflow-y: auto;
+    flex: 1;
+    margin-top: 12px;
+    padding-right: 4px; /* Space for scrollbar */
 }
 
 .finder-modal-lg {
