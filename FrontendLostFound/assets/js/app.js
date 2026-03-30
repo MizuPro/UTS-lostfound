@@ -327,7 +327,10 @@
     
         function closeAll(except = null) {
             groups.forEach((group) => {
-                if (group !== except) group.classList.remove('is-open');
+                if (group !== except) {
+                    group.classList.remove('is-open');
+                    group.classList.remove('is-pinned');
+                }
             });
         }
     
@@ -340,11 +343,12 @@
                 event.preventDefault();
                 event.stopPropagation();
     
-                const isOpen = group.classList.contains('is-open');
+                const isPinned = group.classList.contains('is-pinned');
                 closeAll();
     
-                if (!isOpen) {
+                if (!isPinned) {
                     group.classList.add('is-open');
+                    group.classList.add('is-pinned');
                 }
             });
     
@@ -361,7 +365,9 @@
     
             group.addEventListener('mouseleave', () => {
                 if (window.innerWidth > 820) {
-                    group.classList.remove('is-open');
+                    if (!group.classList.contains('is-pinned')) {
+                        group.classList.remove('is-open');
+                    }
                 }
             });
         });
@@ -399,11 +405,28 @@
             : `${window.APP_CONFIG.FRONTEND_BASE_URL}/profile.php`;
     
         area.innerHTML = `
-            <a href="${profileUrl}" class="nav-user-badge">
-                <span>👤</span>
-                <span>${escapeHtml(user.name || 'Pengguna')}</span>
-            </a>
+            <div class="nav-group profile-group" style="position: relative;">
+                <a href="${profileUrl}" class="nav-user-badge">
+                    <span>👤</span>
+                    <span>${escapeHtml(user.name || 'Pengguna')}</span>
+                </a>
+                <div class="profile-dropdown nav-dropdown" style="display: none; position: absolute; right: 0; min-width: 150px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 8px; z-index: 100;">
+                    <a href="${profileUrl}" style="display: block; padding: 10px 15px; text-decoration: none; color: #333;">Detail</a>
+                    <a href="#" onclick="FinderApp.clearAuth(); window.location.href='${window.APP_CONFIG.FRONTEND_BASE_URL}/login.php'; return false;" style="display: block; padding: 10px 15px; text-decoration: none; color: #a22626; border-top: 1px solid #eee;">Log Out</a>
+                </div>
+            </div>
         `;
+
+        const profileGroup = area.querySelector('.profile-group');
+        const profileDropdown = area.querySelector('.profile-dropdown');
+        if (profileGroup && profileDropdown) {
+            profileGroup.addEventListener('mouseenter', () => {
+                profileDropdown.style.display = 'block';
+            });
+            profileGroup.addEventListener('mouseleave', () => {
+                profileDropdown.style.display = 'none';
+            });
+        }
     }
 
     function requireAuth(role = null) {

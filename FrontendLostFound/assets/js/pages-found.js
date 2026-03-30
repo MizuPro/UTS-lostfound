@@ -39,7 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
             state.classList.add('hidden');
             grid.innerHTML = items.map((item) => `
                 <article class="found-card">
-                    <div class="found-card-media">Preview Aman</div>
+                    <div class="found-card-media" style="position: relative; overflow: hidden; background: #eee;">
+                        ${item.foto_path ? 
+                            `<img src="${FinderApp.escapeHtml(item.foto_path)}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover; filter: blur(12px); pointer-events: none; user-select: none;" oncontextmenu="return false;" draggable="false">` 
+                            : 'Preview Aman'}
+                    </div>
                     <div class="found-card-body">
                         <div class="inline-row between">
                             <h3>${FinderApp.escapeHtml(item.nama_barang)}</h3>
@@ -71,10 +75,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await FinderApp.apiFetch(`/api/found-items/${id}`);
             const item = response?.data?.found_item;
             modalContent.innerHTML = `
+                ${item.foto_path ? 
+                    `<div style="width: 100%; height: 200px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 1rem; background: #eee;">
+                        <img src="${FinderApp.escapeHtml(item.foto_path)}" style="width: 100%; height: 100%; object-fit: cover; filter: blur(12px); pointer-events: none; user-select: none;" oncontextmenu="return false;" draggable="false" alt="Blurred Found Image">
+                     </div>` : ''}
                 <div class="detail-box"><span>Nama Barang</span><strong>${FinderApp.escapeHtml(item.nama_barang)}</strong></div>
                 <div class="detail-box"><span>Waktu Temuan</span><strong>${FinderApp.escapeHtml(FinderApp.formatDateTime(item.waktu_temuan))}</strong></div>
+                <div class="detail-box"><span>Lokasi Ditemukan</span><strong>${FinderApp.escapeHtml(item.lokasi)}</strong></div>
                 <div class="detail-box"><span>Status</span><strong>${FinderApp.escapeHtml(item.status)}</strong></div>
-                <div class="helper-box">Lokasi, deskripsi lengkap, dan foto tidak dikirim backend untuk role pelapor demi keamanan proses klaim.</div>
+                <div class="helper-box">Deskripsi lengkap sengaja dibatasi untuk role pelapor demi keamanan proses klaim.</div>
             `;
         } catch (error) {
             modalContent.innerHTML = `<div class="helper-box">${FinderApp.escapeHtml(FinderApp.getApiErrorMessage(error, 'Gagal memuat detail barang.'))}</div>`;
