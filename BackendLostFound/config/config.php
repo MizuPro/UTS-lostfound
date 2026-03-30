@@ -7,7 +7,7 @@ define('BASE_URL',    'http://localhost/lostfound/BackendLostFound');
 
 // ── Database ──────────────────────────────────────────────────────────────────
 define('DB_HOST',     'localhost');
-define('DB_PORT',     '3600');
+define('DB_PORT',     '9000');
 define('DB_NAME',     'lost_found_db');
 define('DB_USER',     'root');
 define('DB_PASS',     '');

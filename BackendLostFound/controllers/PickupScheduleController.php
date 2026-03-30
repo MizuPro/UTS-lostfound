@@ -468,7 +468,7 @@ class PickupScheduleController
         }
 
         // Return path relatif untuk database
-        return 'handover/' . $fileName;
+        return 'uploads/handover/' . $fileName;
     }
 
     private function isValidDateTime(string $value): bool
