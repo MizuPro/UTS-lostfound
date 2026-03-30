@@ -30,7 +30,7 @@ class LostReportModel
     {
         $sql = 'SELECT lk.id, lk.pelapor_id, u.name AS pelapor_name, u.email AS pelapor_email,
                        lk.nama_barang, lk.deskripsi, lk.lokasi,
-                       lk.waktu_hilang, lk.status,
+                       lk.waktu_hilang, lk.foto_path, lk.status,
                        lk.created_at, lk.updated_at
                 FROM laporan_kehilangan lk
                 JOIN users u ON lk.pelapor_id = u.id
@@ -67,7 +67,7 @@ class LostReportModel
         $stmt = $this->db->prepare(
             'SELECT lk.id, lk.pelapor_id, u.name AS pelapor_name, u.email AS pelapor_email,
                     lk.nama_barang, lk.deskripsi, lk.lokasi,
-                    lk.waktu_hilang, lk.status,
+                    lk.waktu_hilang, lk.foto_path, lk.status,
                     lk.created_at, lk.updated_at
              FROM laporan_kehilangan lk
              JOIN users u ON lk.pelapor_id = u.id
@@ -88,9 +88,11 @@ class LostReportModel
     {
         $sql = 'SELECT lk.id, lk.pelapor_id,
                        lk.nama_barang, lk.deskripsi, lk.lokasi,
-                       lk.waktu_hilang, lk.status,
-                       lk.created_at, lk.updated_at
+                       lk.waktu_hilang, lk.foto_path, lk.status,
+                       lk.created_at, lk.updated_at,
+                       p.foto_bukti_serah, p.waktu_serah
                 FROM laporan_kehilangan lk
+                LEFT JOIN pencocokan p ON lk.id = p.laporan_id AND p.status = \'selesai\'
                 WHERE lk.pelapor_id = ?';
         $params = [$pelaporId];
 
@@ -119,9 +121,11 @@ class LostReportModel
         $stmt = $this->db->prepare(
             'SELECT lk.id, lk.pelapor_id,
                     lk.nama_barang, lk.deskripsi, lk.lokasi,
-                    lk.waktu_hilang, lk.status,
-                    lk.created_at, lk.updated_at
+                    lk.waktu_hilang, lk.foto_path, lk.status,
+                    lk.created_at, lk.updated_at,
+                    p.foto_bukti_serah, p.waktu_serah
              FROM laporan_kehilangan lk
+             LEFT JOIN pencocokan p ON lk.id = p.laporan_id AND p.status = \'selesai\'
              WHERE lk.id = ? AND lk.pelapor_id = ?
              LIMIT 1'
         );
@@ -140,8 +144,8 @@ class LostReportModel
     {
         $stmt = $this->db->prepare(
             'INSERT INTO laporan_kehilangan
-                (pelapor_id, nama_barang, deskripsi, lokasi, waktu_hilang, status)
-             VALUES (?, ?, ?, ?, ?, ?)'
+                (pelapor_id, nama_barang, deskripsi, lokasi, waktu_hilang, foto_path, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $data['pelapor_id'],
@@ -149,8 +153,10 @@ class LostReportModel
             $data['deskripsi']   ?? null,
             $data['lokasi'],
             $data['waktu_hilang'],
+            $data['foto_path']   ?? null,
             $data['status']      ?? 'menunggu',
         ]);
+
         return (int) $this->db->lastInsertId();
     }
 
@@ -165,6 +171,7 @@ class LostReportModel
                  deskripsi    = ?,
                  lokasi       = ?,
                  waktu_hilang = ?,
+                 foto_path    = ?,
                  status       = ?
              WHERE id = ?'
         );
@@ -173,6 +180,7 @@ class LostReportModel
             $data['deskripsi']   ?? null,
             $data['lokasi'],
             $data['waktu_hilang'],
+            $data['foto_path']   ?? null,
             $data['status'],
             $id,
         ]);

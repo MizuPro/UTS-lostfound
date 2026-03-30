@@ -93,19 +93,17 @@ class PickupScheduleModel
         return $result ?: null;
     }
 
-    /**
-     * Buat pengajuan jadwal baru
-     */
     public function create(array $data): int
     {
         $stmt = $this->db->prepare(
             'INSERT INTO jadwal_pengambilan
-                (match_id, pelapor_id, waktu_jadwal, lokasi_pengambilan, catatan, status)
-             VALUES (?, ?, ?, ?, ?, ?)'
+                (match_id, pelapor_id, petugas_id, waktu_jadwal, lokasi_pengambilan, catatan, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $data['match_id'],
             $data['pelapor_id'],
+            $data['petugas_id'] ?? null,
             $data['waktu_jadwal'],
             $data['lokasi_pengambilan'],
             $data['catatan'] ?? null,

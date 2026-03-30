@@ -29,7 +29,8 @@ require_once __DIR__ . '/partials/navbar.php';
                         <div class="form-group">
                             <label for="statusFound">Status</label>
                             <select id="statusFound" name="status">
-                                <option value="">Semua status</option>
+                                <option value="">Belum Selesai (Default)</option>
+                                <option value="semua">Semua status</option>
                                 <option value="tersimpan">Tersimpan</option>
                                 <option value="dicocokkan">Dicocokkan</option>
                                 <option value="diserahkan">Diserahkan</option>

@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderReports(reports) {
         if (!reports.length) {
             reportListState.classList.remove('hidden');
-            reportListState.textContent = 'Anda belum pernah melakukan laporan kehilangan.';
+            reportListState.textContent = 'Tidak ada laporan yang sesuai.';
             reportCards.innerHTML = '';
             return;
         }
@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reportListState.classList.add('hidden');
         reportCards.innerHTML = reports.map((report) => `
             <article class="report-status-card">
+                <div class="image-media" style="margin-bottom: 16px; border-radius: 14px; overflow: hidden; max-height: 180px;">${FinderApp.fileToPreviewHtml(report.foto_path, report.nama_barang)}</div>
                 <div class="report-status-top">
                     <div class="report-status-main">
                         <h3>${FinderApp.escapeHtml(report.nama_barang)}</h3>
@@ -82,12 +83,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadReports() {
+        const statusFilter = document.getElementById('filterReportStatus').value;
         reportListState.classList.remove('hidden');
         reportListState.innerHTML = '<div class="loading-spinner"></div>';
         reportCards.innerHTML = '';
         try {
             const response = await FinderApp.apiFetch('/api/lost-reports');
-            currentReports = response?.data?.lost_reports || [];
+            let reports = response?.data?.lost_reports || [];
+            
+            if (statusFilter === 'selesai') {
+                reports = reports.filter(r => r.status === 'selesai');
+            } else if (statusFilter === 'belum_selesai') {
+                reports = reports.filter(r => r.status !== 'selesai');
+            }
+            
+            currentReports = reports;
             renderReports(currentReports);
         } catch (error) {
             reportListState.classList.remove('hidden');
@@ -100,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('refreshReportsBtn').addEventListener('click', loadReports);
+    document.getElementById('filterReportStatus').addEventListener('change', loadReports);
     document.getElementById('openEditProfileBtn').addEventListener('click', () => FinderApp.openModal('editProfileModal'));
     document.getElementById('openChangePasswordBtn').addEventListener('click', () => FinderApp.openModal('changePasswordModal'));
     document.getElementById('logoutBtn').addEventListener('click', async () => {
@@ -172,12 +183,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const report = findReport(detailBtn.getAttribute('data-detail-report'));
             if (!report) return;
             const detailContent = document.getElementById('reportDetailContent');
+            
+            let handoverHtml = '';
+            if (report.status === 'selesai' && report.foto_bukti_serah) {
+                handoverHtml = `
+                    <div class="detail-box">
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                            <h4>Bukti Handover</h4>
+                            <div style="margin-top: 8px; border-radius: 8px; overflow: hidden; max-height: 200px;">
+                                ${FinderApp.fileToPreviewHtml(report.foto_bukti_serah, 'Bukti Handover')}
+                            </div>
+                            ${report.waktu_serah ? `<div style="margin-top: 8px;"><span>Waktu Serah:</span> <strong>${FinderApp.escapeHtml(FinderApp.formatDateTime(report.waktu_serah))}</strong></div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
             detailContent.innerHTML = `
+                <div class="detail-box image-box">${FinderApp.fileToPreviewHtml(report.foto_path, report.nama_barang)}</div>
                 <div class="detail-box"><span>Nama Barang</span><strong>${FinderApp.escapeHtml(report.nama_barang)}</strong></div>
                 <div class="detail-box"><span>Status</span><strong>${FinderApp.escapeHtml(report.status)}</strong></div>
                 <div class="detail-box"><span>Lokasi</span><strong>${FinderApp.escapeHtml(report.lokasi)}</strong></div>
                 <div class="detail-box"><span>Waktu Hilang</span><strong>${FinderApp.escapeHtml(FinderApp.formatDateTime(report.waktu_hilang))}</strong></div>
                 <div class="detail-box"><span>Deskripsi</span><strong>${FinderApp.escapeHtml(report.deskripsi || '-')}</strong></div>
+                ${handoverHtml}
             `;
             FinderApp.openModal('reportDetailModal');
         }

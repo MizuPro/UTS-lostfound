@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.classList.add('hidden');
         grid.innerHTML = items.map((item) => `
             <article class="officer-card">
+                <div class="image-media" style="margin-bottom: 16px; border-radius: 14px; overflow: hidden; max-height: 180px;">${FinderApp.fileToPreviewHtml(item.foto_path, item.nama_barang)}</div>
                 <div class="inline-row between wrap-gap">
                     <div>
                         <h3>${FinderApp.escapeHtml(item.nama_barang)}</h3>
@@ -87,8 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const report = findReport(detailBtn.getAttribute('data-lost-detail'));
             if (!report) return;
             detailContent.innerHTML = `
+                <div class="detail-box image-box">${FinderApp.fileToPreviewHtml(report.foto_path, report.nama_barang)}</div>
                 <div class="detail-box"><span>Nama Barang</span><strong>${FinderApp.escapeHtml(report.nama_barang)}</strong></div>
-                <div class="detail-box"><span>Pelapor</span><strong>${FinderApp.escapeHtml(report.pelapor_name || '-')} • ${FinderApp.escapeHtml(report.pelapor_email || '-')}</strong></div>
+                <div class="detail-box"><span>Pelapor</span><strong>${FinderApp.escapeHtml(report.pelapor_name || '-')} | ${FinderApp.escapeHtml(report.pelapor_email || '-')}</strong></div>
                 <div class="detail-box"><span>Status</span><strong>${FinderApp.escapeHtml(report.status)}</strong></div>
                 <div class="detail-box"><span>Lokasi</span><strong>${FinderApp.escapeHtml(report.lokasi || '-')}</strong></div>
                 <div class="detail-box"><span>Waktu Hilang</span><strong>${FinderApp.escapeHtml(FinderApp.formatDateTime(report.waktu_hilang))}</strong></div>

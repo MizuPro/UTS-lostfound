@@ -115,6 +115,43 @@
         setTimeout(() => toast.remove(), timeout);
     }
 
+    function showAlert(title, message, type = 'info') {
+        let modal = document.getElementById('finderAlertModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'finderAlertModal';
+            modal.className = 'finder-modal';
+            modal.hidden = true;
+            modal.innerHTML = `
+                <div class="finder-modal-backdrop" data-close-modal></div>
+                <div class="finder-modal-dialog" style="max-width: 380px; text-align: center; padding: 40px 24px;">
+                    <div id="finderAlertIcon" style="font-size: 4rem; margin-bottom: 16px; line-height: 1;"></div>
+                    <h3 id="finderAlertTitle" style="margin-bottom: 10px; font-size: 22px;"></h3>
+                    <p id="finderAlertMessage" style="margin-bottom: 28px; color: rgba(19,19,22,0.72); line-height: 1.6; font-size: 15px; padding: 0 10px;"></p>
+                    <button type="button" class="btn btn-primary btn-block" data-close-modal id="finderAlertBtn">Oke, Mengerti</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        const iconEl = document.getElementById('finderAlertIcon');
+        const titleEl = document.getElementById('finderAlertTitle');
+        const msgEl = document.getElementById('finderAlertMessage');
+
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+
+        if (type === 'success') {
+            iconEl.innerHTML = '<i class="bi bi-check-circle-fill" style="color: #1b7a44;"></i>';
+        } else if (type === 'error') {
+            iconEl.innerHTML = '<i class="bi bi-x-circle-fill" style="color: #a22626;"></i>';
+        } else {
+            iconEl.innerHTML = '<i class="bi bi-info-circle-fill" style="color: #244cff;"></i>';
+        }
+
+        openModal(modal);
+    }
+
     function consumeFlashMessage() {
         const message = sessionStorage.getItem('finder_flash_message');
         if (message) {
@@ -173,6 +210,12 @@
         return `<span class="badge ${statusBadgeClass(status)}">${label}</span>`;
     }
 
+    function formatStatus(status) {
+        if (!status) return '-';
+        const formatted = status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        return formatted;
+    }
+
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text ?? '';
@@ -181,12 +224,22 @@
 
     function syncBodyScrollLock() {
         const hasOpenModal = document.querySelector('.finder-modal:not([hidden])');
+    
         if (hasOpenModal) {
             document.body.classList.add('finder-modal-open');
             document.body.style.overflow = 'hidden';
+            return;
+        }
+    
+        document.body.classList.remove('finder-modal-open');
+    
+        if (document.body.classList.contains('theme-auth')) {
+            document.body.style.overflowX = 'hidden';
+            document.body.style.overflowY = 'auto';
         } else {
-            document.body.classList.remove('finder-modal-open');
             document.body.style.overflow = '';
+            document.body.style.overflowX = '';
+            document.body.style.overflowY = '';
         }
     }
     
@@ -204,11 +257,13 @@
     
         modal.hidden = true;
         modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('finder-modal-open');
+        document.body.style.overflow = '';
         syncBodyScrollLock();
     }
     
     function closeAllModals() {
-        document.querySelectorAll('.finder-modal:not([hidden])').forEach((modal) => {
+        document.querySelectorAll('.finder-modal:not([hidden]), .modal:not([hidden])').forEach((modal) => {
             closeModal(modal);
         });
     }
@@ -284,7 +339,10 @@
     
         function closeAll(except = null) {
             groups.forEach((group) => {
-                if (group !== except) group.classList.remove('is-open');
+                if (group !== except) {
+                    group.classList.remove('is-open');
+                    group.classList.remove('is-pinned');
+                }
             });
         }
     
@@ -297,11 +355,12 @@
                 event.preventDefault();
                 event.stopPropagation();
     
-                const isOpen = group.classList.contains('is-open');
+                const isPinned = group.classList.contains('is-pinned');
                 closeAll();
     
-                if (!isOpen) {
+                if (!isPinned) {
                     group.classList.add('is-open');
+                    group.classList.add('is-pinned');
                 }
             });
     
@@ -318,7 +377,9 @@
     
             group.addEventListener('mouseleave', () => {
                 if (window.innerWidth > 820) {
-                    group.classList.remove('is-open');
+                    if (!group.classList.contains('is-pinned')) {
+                        group.classList.remove('is-open');
+                    }
                 }
             });
         });
@@ -356,11 +417,28 @@
             : `${window.APP_CONFIG.FRONTEND_BASE_URL}/profile.php`;
     
         area.innerHTML = `
-            <a href="${profileUrl}" class="nav-user-badge">
-                <span>👤</span>
-                <span>${escapeHtml(user.name || 'Pengguna')}</span>
-            </a>
+            <div class="nav-group profile-group" style="position: relative;">
+                <a href="${profileUrl}" class="nav-user-badge">
+                    <span>👤</span>
+                    <span>${escapeHtml(user.name || 'Pengguna')}</span>
+                </a>
+                <div class="profile-dropdown nav-dropdown" style="display: none; position: absolute; right: 0; min-width: 150px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 8px; z-index: 100;">
+                    <a href="${profileUrl}" style="display: block; padding: 10px 15px; text-decoration: none; color: #333;">Detail</a>
+                    <a href="#" onclick="FinderApp.clearAuth(); window.location.href='${window.APP_CONFIG.FRONTEND_BASE_URL}/login.php'; return false;" style="display: block; padding: 10px 15px; text-decoration: none; color: #a22626; border-top: 1px solid #eee;">Log Out</a>
+                </div>
+            </div>
         `;
+
+        const profileGroup = area.querySelector('.profile-group');
+        const profileDropdown = area.querySelector('.profile-dropdown');
+        if (profileGroup && profileDropdown) {
+            profileGroup.addEventListener('mouseenter', () => {
+                profileDropdown.style.display = 'block';
+            });
+            profileGroup.addEventListener('mouseleave', () => {
+                profileDropdown.style.display = 'none';
+            });
+        }
     }
 
     function requireAuth(role = null) {
@@ -382,7 +460,35 @@
 
     function fileToPreviewHtml(url, alt = 'Preview') {
         if (!url) return '<div class="image-placeholder">Tidak ada foto</div>';
-        return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" class="cover-image">`;
+        let imageUrl = url;
+        if (!imageUrl.startsWith('http')) {
+            imageUrl = window.APP_CONFIG.API_BASE_URL + '/storage/' + imageUrl.replace(/^\/?(storage\/)?/, '');
+        }
+        return `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(alt)}" class="cover-image" style="cursor: pointer;" onclick="FinderApp.showImageLightbox(this.src, this.alt)">`;
+    }
+
+    function showImageLightbox(src, alt) {
+        let lightbox = document.getElementById('finderImageLightbox');
+        if (!lightbox) {
+            lightbox = document.createElement('div');
+            lightbox.id = 'finderImageLightbox';
+            lightbox.className = 'finder-modal';
+            lightbox.hidden = true;
+            lightbox.innerHTML = `
+                <div class="finder-modal-backdrop" data-close-modal style="background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);"></div>
+                <button class="finder-modal-close" type="button" data-close-modal style="color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 2;">&times;</button>
+                <div class="lightbox-content" style="position: absolute; inset: 40px; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 1;">
+                    <img id="finderLightboxImg" src="" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: auto; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                </div>
+            `;
+            document.body.appendChild(lightbox);
+        }
+
+        const img = document.getElementById('finderLightboxImg');
+        img.src = src;
+        img.alt = alt || 'Preview';
+
+        openModal(lightbox);
     }
 
     window.FinderApp = {
@@ -393,6 +499,7 @@
         clearAuth,
         apiFetch,
         showToast,
+        showAlert,
         consumeFlashMessage,
         getApiErrorMessage,
         formatDateTime,
@@ -400,6 +507,7 @@
         combineDateTime,
         statusBadge,
         statusBadgeClass,
+        formatStatus,
         escapeHtml,
         openModal,
         closeModal,
@@ -408,11 +516,19 @@
         getHomePathByRole,
         getProfilePathByRole,
         fileToPreviewHtml,
+        showImageLightbox,
     };
 
     document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('finder-modal-open');
         document.body.style.overflow = '';
+        document.body.style.overflowX = '';
+        document.body.style.overflowY = '';
+
+        if (document.body.classList.contains('theme-auth')) {
+            document.body.style.overflowX = 'hidden';
+            document.body.style.overflowY = 'auto';
+        }
     
         document.querySelectorAll('.finder-modal').forEach((modal) => {
             if (!modal.hasAttribute('hidden')) {

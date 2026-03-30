@@ -45,7 +45,7 @@ return [
     'DELETE /api/lost-reports/{id}'   => ['LostReportController', 'delete',  ['auth', 'role:petugas']],
 
     // ── PENCOCOKAN & KLAIM (Matching & Claims) ───────────────────────────────
-    'GET /api/matches'                => ['MatchController', 'index',         ['auth', 'role:petugas']],
+    'GET /api/matches'                => ['MatchController', 'index',         ['auth', 'role:petugas,pelapor']],
     'GET /api/matches/{id}'           => ['MatchController', 'show',          ['auth', 'role:petugas,pelapor']],
     'POST /api/matches'               => ['MatchController', 'matchItem',     ['auth', 'role:petugas']],
     'PUT /api/matches/{id}/verify'    => ['MatchController', 'verifyClaim',   ['auth', 'role:petugas']],
@@ -58,6 +58,7 @@ return [
     'POST /api/pickup-schedules'              => ['PickupScheduleController', 'create',     ['auth', 'role:petugas,pelapor']],
     'PUT /api/pickup-schedules/{id}/review'   => ['PickupScheduleController', 'review',     ['auth', 'role:petugas']],
     'PUT /api/pickup-schedules/{id}/reschedule' => ['PickupScheduleController', 'reschedule', ['auth', 'role:petugas']],
+    'PUT /api/pickup-schedules/{id}/revise'   => ['PickupScheduleController', 'revise',     ['auth', 'role:pelapor']],
     'PUT /api/pickup-schedules/{id}/cancel'   => ['PickupScheduleController', 'cancel',     ['auth', 'role:petugas,pelapor']],
     'PUT /api/pickup-schedules/{id}/complete' => ['PickupScheduleController', 'complete',   ['auth', 'role:petugas']],
 ];

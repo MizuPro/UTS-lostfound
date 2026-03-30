@@ -51,9 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     deskripsi,
                 },
             });
+            FinderApp.showAlert('Berhasil', 'Laporan kehilangan berhasil dibuat oleh Petugas.', 'success');
             FinderApp.showToast('Laporan kehilangan berhasil dibuat.', 'success');
             form.reset();
         } catch (error) {
+            FinderApp.showAlert('Gagal', FinderApp.getApiErrorMessage(error, 'Gagal membuat laporan kehilangan.'), 'error');
             FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Gagal membuat laporan kehilangan.'), 'error');
         } finally {
             submitBtn.disabled = false;

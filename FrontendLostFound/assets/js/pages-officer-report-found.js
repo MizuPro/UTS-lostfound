@@ -59,9 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 body: payload,
             });
+            FinderApp.showAlert('Berhasil', 'Barang temuan berhasil ditambahkan.', 'success');
             FinderApp.showToast('Barang temuan berhasil ditambahkan.', 'success');
             form.reset();
         } catch (error) {
+            FinderApp.showAlert('Gagal', FinderApp.getApiErrorMessage(error, 'Gagal menambahkan barang temuan.'), 'error');
             FinderApp.showToast(FinderApp.getApiErrorMessage(error, 'Gagal menambahkan barang temuan.'), 'error');
         } finally {
             submitBtn.disabled = false;

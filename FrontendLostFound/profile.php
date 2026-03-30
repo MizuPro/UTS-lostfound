@@ -1,4 +1,4 @@
- <?php
+<?php
 $pageTitle = 'Profile - Finder by KAI';
 $pageClass = 'theme-app';
 $activePage = 'profile';
@@ -51,7 +51,14 @@ require_once __DIR__ . '/partials/navbar.php';
                             <h2>Laporan kehilangan saya</h2>
                             <p class="muted">Halaman ini menampilkan laporan milik akun yang sedang login.</p>
                         </div>
-                        <button type="button" class="btn btn-outline" id="refreshReportsBtn">Refresh</button>
+                        <div class="action-stack">
+                            <select id="filterReportStatus" class="form-control" style="width: auto; padding: 0.5rem;">
+                                <option value="semua">Semua Laporan</option>
+                                <option value="selesai">Selesai</option>
+                                <option value="belum_selesai">Belum Selesai</option>
+                            </select>
+                            <button type="button" class="btn btn-outline" id="refreshReportsBtn">Refresh</button>
+                        </div>
                     </div>
                     <div id="reportListState" class="empty-state soft">Memuat laporan kehilangan...</div>
                     <div id="reportCards" class="report-status-list"></div>

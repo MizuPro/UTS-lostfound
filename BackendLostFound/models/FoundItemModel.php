@@ -92,8 +92,12 @@ class FoundItemModel
      */
     public function getAllForPelapor(array $filters = [], bool $includeArchived = false): array
     {
-        $sql    = 'SELECT bt.id, bt.nama_barang, bt.waktu_temuan, bt.status
+        $sql    = 'SELECT bt.id, bt.petugas_id, u.name AS petugas_name,
+                          bt.nama_barang, bt.lokasi,
+                          bt.waktu_temuan, bt.foto_path, bt.catatan_selesai,
+                          bt.status, bt.created_at, bt.updated_at
                    FROM barang_temuan bt
+                   JOIN users u ON bt.petugas_id = u.id
                    WHERE 1=1';
         $params = [];
 
@@ -125,8 +129,12 @@ class FoundItemModel
     public function findByIdForPelapor(int $id): ?array
     {
         $stmt = $this->db->prepare(
-            'SELECT bt.id, bt.nama_barang, bt.waktu_temuan, bt.status
+            'SELECT bt.id, bt.petugas_id, u.name AS petugas_name,
+                    bt.nama_barang, bt.lokasi,
+                    bt.waktu_temuan, bt.foto_path, bt.catatan_selesai,
+                    bt.status, bt.created_at, bt.updated_at
              FROM barang_temuan bt
+             JOIN users u ON bt.petugas_id = u.id
              WHERE bt.id = ?
              LIMIT 1'
         );

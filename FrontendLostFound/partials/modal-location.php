@@ -1,6 +1,6 @@
 <!-- partials/modal-location.php -->
 <div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-fullscreen-md-down" style="max-width: 95vw;">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable location-modal-dialog">
         <div class="modal-content custom-modal-content">
             <div class="modal-header custom-modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title m-0" id="locationModalLabel">
@@ -26,7 +26,7 @@
                 </ul>
             </div>
 
-            <div class="modal-body custom-modal-body p-0 position-relative" style="height: 80vh; min-height: 550px; background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%); overflow: hidden;" id="krlMapBody">
+            <div class="modal-body custom-modal-body location-map-body p-0 position-relative" id="krlMapBody">
                 <!-- Map Controls -->
                 <div class="map-controls position-absolute z-3 d-flex flex-column gap-2" style="left: 16px; top: 16px;">
                     <button type="button" class="btn btn-light shadow-sm border rounded-circle d-flex align-items-center justify-content-center" id="zoomInBtn" title="Zoom In" style="width:38px;height:38px;font-size:18px;">+</button>
@@ -114,16 +114,72 @@
 #locationModal ~ .modal-backdrop {
     z-index: 1055 !important;
 }
-#locationModal .modal-dialog {
-    max-width: 95vw;
-    width: 95vw;
-    margin: 1.5rem auto;
+
+#locationModal {
+    z-index: 1060 !important;
 }
+
+#locationModal ~ .modal-backdrop {
+    z-index: 1055 !important;
+}
+
+#locationModal .location-modal-dialog {
+    width: min(90vw, 1100px);
+    max-width: 1100px;
+    margin: 1rem auto;
+}
+
+#locationModal .custom-modal-content {
+    border-radius: var(--radius-lg, 22px);
+    border: 1px solid rgba(19, 19, 22, 0.1);
+    background: var(--surface-2, #ffffff);
+    box-shadow: var(--shadow, 0 18px 40px rgba(0,0,0,0.12));
+    overflow: hidden;
+    max-height: calc(100vh - 2rem);
+}
+
+#locationModal .location-map-body {
+    height: min(65vh, 620px);
+    min-height: 420px;
+    background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+    overflow: hidden;
+}
+
+@media (max-width: 992px) {
+    #locationModal .location-modal-dialog {
+        width: 92vw;
+        max-width: 92vw;
+    }
+
+    #locationModal .location-map-body {
+        height: min(60vh, 540px);
+        min-height: 380px;
+    }
+}
+
 @media (max-width: 768px) {
-    #locationModal .modal-dialog {
-        max-width: 100vw;
-        width: 100vw;
-        margin: 0;
+    #locationModal .location-modal-dialog {
+        width: 94vw;
+        max-width: 94vw;
+        margin: 0.75rem auto;
+    }
+
+    #locationModal .custom-modal-header,
+    #locationModal .custom-modal-footer {
+        padding: 14px 16px;
+    }
+
+    #locationModal .location-map-body {
+        height: 52vh;
+        min-height: 320px;
+    }
+
+    #locationModal .map-legend {
+        top: 12px !important;
+        right: 12px !important;
+        max-width: 180px;
+        padding: 10px 12px !important;
+        font-size: 10px !important;
     }
 }
 

@@ -1,5 +1,6 @@
 <?php require_once __DIR__ . '/../includes/url.php'; ?>
 <?php $isOfficerPage = isset($activePage) && strpos((string)$activePage, 'officer-') === 0; ?>
+<?php if (!$isAuthPage): ?>
 <footer class="site-footer">
     <div class="container footer-grid">
         <div>
@@ -46,7 +47,8 @@
         </div>
     </div>
 </footer>
-<?php require_once __DIR__ . '/chat-widget.php'; ?>
+<?php endif; ?>
+<?php if (!$isAuthPage) require_once __DIR__ . '/chat-widget.php'; ?>
 <?php if (!empty($pageScript)): ?>
 <script>window.APP_PAGE_SCRIPT = <?= json_encode($pageScript) ?>;</script>
 <?php endif; ?>

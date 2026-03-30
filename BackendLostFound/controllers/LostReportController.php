@@ -92,7 +92,12 @@ class LostReportController
         $authUser = $GLOBALS['auth_user'] ?? null;
         $userId   = (int) ($authUser['user_id'] ?? 0);
 
-        $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (strpos($contentType, 'multipart/form-data') !== false) {
+            $input = ValidationHelper::sanitizeAll($_POST);
+        } else {
+            $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
+        }
 
         $errors = ValidationHelper::required($input, ['nama_barang', 'lokasi', 'waktu_hilang']);
         if (!empty($errors)) {
@@ -112,22 +117,32 @@ class LostReportController
             ResponseHelper::validationError(['waktu_hilang' => 'Format waktu_hilang harus: YYYY-MM-DD HH:MM:SS']);
         }
 
-        $id = $this->model->create([
-            'pelapor_id'   => $userId,
-            'nama_barang'  => $input['nama_barang'],
-            'deskripsi'    => $input['deskripsi'] ?? null,
-            'lokasi'       => $input['lokasi'],
-            'waktu_hilang' => $input['waktu_hilang'],
-            'status'       => 'menunggu',
-        ]);
+        $fotoPath = null;
+        if (!empty($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $fotoPath = $this->handleUpload($_FILES['foto']);
+        }
 
-        $report = $this->model->findById($id);
+        try {
+            $id = $this->model->create([
+                'pelapor_id'   => $userId,
+                'nama_barang'  => $input['nama_barang'],
+                'deskripsi'    => $input['deskripsi'] ?? null,
+                'lokasi'       => $input['lokasi'],
+                'waktu_hilang' => $input['waktu_hilang'],
+                'foto_path'    => $fotoPath,
+                'status'       => 'menunggu',
+            ]);
 
-        ResponseHelper::success(
-            ['lost_report' => $report],
-            'Laporan kehilangan berhasil dibuat.',
-            201
-        );
+            $report = $this->model->findById($id);
+
+            ResponseHelper::success(
+                ['lost_report' => $report],
+                'Laporan kehilangan berhasil dibuat.',
+                201
+            );
+        } catch (\Exception $e) {
+            ResponseHelper::error('Gagal membuat laporan: ' . $e->getMessage(), 500);
+        }
     }
 
     // ── PUT /api/lost-reports/{id} ───────────────────────────────────────────
@@ -157,15 +172,18 @@ class LostReportController
             );
         }
 
-        $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (strpos($contentType, 'multipart/form-data') !== false) {
+            $input = ValidationHelper::sanitizeAll($_POST);
+        } else {
+            $input = ValidationHelper::sanitizeAll(ValidationHelper::getInput());
+        }
 
         $errors = ValidationHelper::required($input, ['nama_barang', 'lokasi', 'waktu_hilang', 'status']);
         if (!empty($errors)) {
             ResponseHelper::validationError($errors);
         }
 
-        // Pelapor hanya boleh set status 'menunggu' atau 'ditutup' (menutup laporan sendiri)
-        // Petugas boleh set semua status
         if ($role === ROLE_PETUGAS) {
             $validStatus = ['menunggu', 'dicocokkan', 'selesai', 'ditutup'];
         } else {
@@ -191,11 +209,23 @@ class LostReportController
             ResponseHelper::validationError(['waktu_hilang' => 'Format waktu_hilang harus: YYYY-MM-DD HH:MM:SS']);
         }
 
+        $fotoPath = $report['foto_path'] ?? null;
+        if (!empty($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $newFoto = $this->handleUpload($_FILES['foto']);
+
+            // Delete old photo if it exists
+            if ($fotoPath && file_exists(__DIR__ . '/../storage/' . $fotoPath)) {
+                unlink(__DIR__ . '/../storage/' . $fotoPath);
+            }
+            $fotoPath = $newFoto;
+        }
+
         $this->model->update($id, [
             'nama_barang'  => $input['nama_barang'],
             'deskripsi'    => $input['deskripsi'] ?? null,
             'lokasi'       => $input['lokasi'],
             'waktu_hilang' => $input['waktu_hilang'],
+            'foto_path'    => $fotoPath,
             'status'       => $input['status'],
         ]);
 
@@ -247,5 +277,37 @@ class LostReportController
             ResponseHelper::error('Terjadi kesalahan saat menghapus laporan: ' . $e->getMessage(), 500);
         }
     }
-}
 
+    private function handleUpload(array $file): string
+    {
+        $maxSize = 5 * 1024 * 1024; // 5 MB
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        $uploadDir = __DIR__ . '/../storage/uploads/';
+
+        if ($file['size'] > $maxSize) {
+            ResponseHelper::error('Ukuran file maksimal 5MB.', 400);
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($mime, $allowedTypes, true)) {
+            ResponseHelper::error('Format file tidak didukung. Hanya JPEG, PNG, atau WebP.', 400);
+        }
+
+        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
+            ResponseHelper::error('Gagal membuat direktori upload.', 500);
+        }
+
+        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = 'lost_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
+        $dest = $uploadDir . $filename;
+
+        if (!move_uploaded_file($file['tmp_name'], $dest)) {
+            ResponseHelper::error('Gagal mengupload file.', 500);
+        }
+
+        return 'uploads/' . $filename;
+    }
+}
